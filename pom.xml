@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.uengine</groupId>
-    <artifactId>oceIAM</artifactId>
+    <artifactId>uEngine-iam</artifactId>
     <packaging>pom</packaging>
     <version>2.0.0-SNAPSHOT</version>
 
@@ -13,111 +13,20 @@
     <modules>
         <module>iam-common</module>
         <module>iam-java-client</module>
+        <module>iam-web</module>
     </modules>
 
-    <properties>
-        <!-- Project -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
-        <output.encoding>UTF-8</output.encoding>
-        <javadoc.locale>ko_KR</javadoc.locale>
-
-        <!-- Spring Framework -->
-        <spring.version>4.2.0.RELEASE</spring.version>
-        <aspectj.version>1.8.4</aspectj.version>
-        <aopalliance.version>1.0</aopalliance.version>
-        <spring.security.version>4.0.1.RELEASE</spring.security.version>
-        <spring.mobile.version>1.1.1.RELEASE</spring.mobile.version>
-        <spring.webflow.version>2.4.0.RELEASE</spring.webflow.version>
-
-        <!-- Thymeleaf -->
-        <thymeleaf.version>2.1.3.RELEASE</thymeleaf.version>
-        <thymeleaf.extras.springsecurity3.version>2.1.1.RELEASE</thymeleaf.extras.springsecurity3.version>
-        <thymeleaf.extras.conditionalcomments.version>2.1.1.RELEASE</thymeleaf.extras.conditionalcomments.version>
-
-        <!-- License Manager -->
-        <license.manager.version>1.1.0</license.manager.version>
-
-        <!-- Logging -->
-        <commons.logging.version>1.1.1</commons.logging.version>
-        <slf4j.version>1.7.9</slf4j.version>
-        <logback.version>1.1.2</logback.version>
-        <log4j.version>1.2.17</log4j.version>
-        <log4jdbc.remix.version>0.2.7</log4jdbc.remix.version>
-
-        <!-- Commons -->
-        <commons.el.version>1.0</commons.el.version>
-        <commons.io.version>2.3</commons.io.version>
-        <commons.beanutils.version>1.8.3</commons.beanutils.version>
-        <commons.lang.version>2.6</commons.lang.version>
-        <commons.exec.version>1.1</commons.exec.version>
-        <commons.cli.version>1.2</commons.cli.version>
-        <commons.fileupload.version>1.2.2</commons.fileupload.version>
-        <commons.compress.version>1.9</commons.compress.version>
-        <commons.cli2.version>2.0-mahout</commons.cli2.version>
-        <commons.collection.version>3.2.1</commons.collection.version>
-        <commons.math3.version>3.1.1</commons.math3.version>
-        <commons.codec.version>1.10</commons.codec.version>
-
-        <!-- Hibernate Validator -->
-        <hibernate.version>5.1.3.Final</hibernate.version>
-
-        <!-- HttpClient -->
-        <httpclient.version>4.3.3</httpclient.version>
-
-        <!-- JSON -->
-        <jackson.version>2.4.4</jackson.version>
-
-        <!-- Guava -->
-        <guava.version>18.0</guava.version>
-
-        <!-- Reactor -->
-        <reactor.version>1.1.5.RELEASE</reactor.version>
-        <reactor.spring.version>1.1.3.RELEASE</reactor.spring.version>
-
-        <!-- Apache POI -->
-        <poi.version>3.12</poi.version>
-
-        <!-- Scheduler -->
-        <quartz.version>2.2.1</quartz.version>
-
-        <!-- Persistence -->
-        <mybatis.version>3.2.8</mybatis.version>
-        <mybatis.spring.version>1.2.2</mybatis.spring.version>
-
-        <!-- JDBC -->
-        <mysql.version>5.1.34</mysql.version>
-        <log4jdbc.remix.version>0.2.7</log4jdbc.remix.version>
-        <hikaricp.version>2.3.2</hikaricp.version>
-
-        <!-- Ehcache -->
-        <ehcache.version>2.6.10</ehcache.version>
-
-        <!-- Activiti -->
-        <activiti.version>5.17.0</activiti.version>
-
-        <!-- Java EE -->
-        <javax.servlet.version>3.1.0</javax.servlet.version>
-        <javax.jsp.version>2.3.0</javax.jsp.version>
-        <javax.jstl.version>1.2</javax.jstl.version>
-        <tablibs.version>1.1.2</tablibs.version>
-        <javamail.version>1.4.7</javamail.version>
-        <jta.version>1.1</jta.version>
-        <activation.version>1.1</activation.version>
-        <javax.validation.version>1.1.0.Final</javax.validation.version>
-
-        <!-- Velocity -->
-        <velocity.version>1.7</velocity.version>
-        <velocity.tools.version>2.0</velocity.tools.version>
-
-        <!-- JAXB -->
-        <jaxb.version>2.1.13</jaxb.version>
-
-        <junit.version>4.11</junit.version>
-        <easymock.version>3.2</easymock.version>
-    </properties>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.8.RELEASE</version>
+    </parent>
 
     <repositories>
+        <repository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
         <repository>
             <id>central</id>
             <url>https://repo1.maven.org/maven2</url>
@@ -132,18 +41,14 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>cloudera</id>
-            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-        </repository>
-        <repository>
-            <id>jsqlparser-snapshots</id>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <distributionManagement>
         <repository>
@@ -155,11 +60,6 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <issueManagement>
-        <system>Github</system>
-        <url>https://github.com/TheOpenCloudEngine/essencia/issues</url>
-    </issueManagement>
 
     <organization>
         <name>uEngein Inc</name>

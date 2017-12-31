@@ -14,71 +14,50 @@
     <version>2.0.0-SNAPSHOT</version>
     <name>iam-java-client</name>
 
+    <properties>
+        <!-- Commons -->
+        <commons.el.version>1.0</commons.el.version>
+        <commons.io.version>2.3</commons.io.version>
+        <commons.beanutils.version>1.8.3</commons.beanutils.version>
+        <commons.lang.version>2.6</commons.lang.version>
+        <commons.exec.version>1.1</commons.exec.version>
+        <commons.cli.version>1.2</commons.cli.version>
+        <commons.fileupload.version>1.2.2</commons.fileupload.version>
+        <commons.compress.version>1.9</commons.compress.version>
+        <commons.cli2.version>2.0-mahout</commons.cli2.version>
+        <commons.collection.version>3.2.1</commons.collection.version>
+        <commons.math3.version>3.1.1</commons.math3.version>
+        <commons.codec.version>1.10</commons.codec.version>
+
+        <!-- HttpClient -->
+        <httpclient.version>4.3.3</httpclient.version>
+
+        <!-- Guava -->
+        <guava.version>18.0</guava.version>
+    </properties>
+
+    <!-- ====================== -->
+    <!--  Spring Boot           -->
+    <!-- ====================== -->
     <dependencies>
-        <!-- ====== -->
-        <!--  JSON  -->
-        <!-- ====== -->
-
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>2.9.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
+        <!-- ================== -->
+        <!--  Jwt  -->
+        <!-- ================== -->
 
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <!-- ============= -->
-        <!--  HTTP Client  -->
-        <!-- ============= -->
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>${httpclient.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
-        </dependency>
-
-        <!-- ============= -->
-        <!--  Logging API  -->
-        <!-- ============= -->
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.lazyluke</groupId>
-            <artifactId>log4jdbc-remix</artifactId>
-            <version>${log4jdbc.remix.version}</version>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>4.16.1</version>
         </dependency>
 
         <!-- ================= -->
@@ -133,6 +112,23 @@
             <version>${commons.codec.version}</version>
         </dependency>
 
+
+        <!-- ============= -->
+        <!--  HTTP Client  -->
+        <!-- ============= -->
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+
         <!-- ============== -->
         <!--  Google Guava  -->
         <!-- ============== -->
@@ -142,7 +138,6 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -158,6 +153,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
