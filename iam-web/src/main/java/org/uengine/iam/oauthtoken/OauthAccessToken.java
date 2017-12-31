@@ -17,6 +17,7 @@ import java.util.List;
  * Created by uengine on 2015. 6. 3..
  */
 @Entity
+@Table(name = "oauth_token")
 public class OauthAccessToken {
 
     @Id
@@ -33,13 +34,22 @@ public class OauthAccessToken {
     private String refreshToken;
     private String oldRefreshToken;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "regDate", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date regDate;
+    @Column(name = "regDate", nullable = false, updatable = false, insertable = true)
+    private long regDate;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updDate", nullable = false, updatable = true, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date updDate;
+    @Column(name = "updDate", nullable = false, updatable = true, insertable = true)
+    private long updDate;
+
+    @PrePersist
+    void preInsert() {
+        this.regDate = new Date().getTime();
+        this.updDate = new Date().getTime();
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        this.updDate = new Date().getTime();
+    }
 
     public List<String> getScopes() {
         try {
@@ -121,19 +131,19 @@ public class OauthAccessToken {
         this.oldRefreshToken = oldRefreshToken;
     }
 
-    public Date getRegDate() {
+    public long getRegDate() {
         return regDate;
     }
 
-    public void setRegDate(Date regDate) {
+    public void setRegDate(long regDate) {
         this.regDate = regDate;
     }
 
-    public Date getUpdDate() {
+    public long getUpdDate() {
         return updDate;
     }
 
-    public void setUpdDate(Date updDate) {
+    public void setUpdDate(long updDate) {
         this.updDate = updDate;
     }
 }

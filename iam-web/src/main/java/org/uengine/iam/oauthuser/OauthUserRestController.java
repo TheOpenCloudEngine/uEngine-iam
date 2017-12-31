@@ -3,6 +3,7 @@ package org.uengine.iam.oauthuser;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -140,7 +141,6 @@ public class OauthUserRestController {
                                                             HttpServletResponse response,
                                                             @RequestParam("userName") String userName,
                                                             @PageableDefault Pageable pageable) {
-
         OauthUserPage oauthUserPage = oauthUserRepository.findLikeUserName(userName, pageable);
         HttpHeaders headers = new HttpHeaders();
 
@@ -152,12 +152,12 @@ public class OauthUserRestController {
     }
 
     @RequestMapping(value = "/avatar", method = RequestMethod.POST)
-    public ResponseEntity<?> createUserAvatar(HttpServletRequest request,
-                                              HttpServletResponse response,
-                                              @RequestParam(required = false) String userName,
-                                              @RequestParam("contentType") String contentType) throws Exception {
+    public ResponseEntity<OauthAvatar> createUserAvatar(HttpServletRequest request,
+                                                        HttpServletResponse response,
+                                                        @RequestParam(required = false) String userName,
+                                                        @RequestParam("contentType") String contentType) throws Exception {
         if (!contentType.startsWith("image/")) {
-            return new ResponseEntity<>("Invalid Mime Type", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         ServletInputStream inputStream = request.getInputStream();
@@ -173,10 +173,14 @@ public class OauthUserRestController {
     }
 
     @RequestMapping(value = "/avatar/formdata", method = RequestMethod.POST)
-    public ResponseEntity<?> createUserAvatarByFormData(HttpServletRequest request, HttpServletResponse response,
-                                                        @RequestParam(required = false) String userName,
-                                                        @RequestParam("contentType") String contentType,
-                                                        @RequestParam("file") MultipartFile file) throws Exception {
+    public ResponseEntity<OauthAvatar> createUserAvatarByFormData(HttpServletRequest request, HttpServletResponse response,
+                                                                  @RequestParam(required = false) String userName,
+                                                                  @RequestParam("contentType") String contentType,
+                                                                  @RequestParam("file") MultipartFile file) throws Exception {
+        if (!contentType.startsWith("image/")) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         byte[] data = IOUtils.toByteArray(file.getInputStream());
         OauthAvatar oauthAvatar = new OauthAvatar();
         oauthAvatar.setData(data);
@@ -190,7 +194,7 @@ public class OauthUserRestController {
 
     @RequestMapping(value = "/avatar", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteAvatar(HttpServletRequest request, HttpServletResponse response,
-                                           @RequestParam(required = false) String userName) {
+                                             @RequestParam(required = false) String userName) {
 
         oauthUserRepository.deleteAvatar(userName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

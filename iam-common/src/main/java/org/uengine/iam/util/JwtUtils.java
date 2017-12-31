@@ -52,6 +52,17 @@ public class JwtUtils {
         return JWTClaimsSet.parse(jsonPayload);
     }
 
+    public static boolean verifyWithKey(JWSObject jwsObject, String HS256SecretKey) throws Exception {
+        JWSHeader header = jwsObject.getHeader();
+        JWSAlgorithm algorithm = header.getAlgorithm();
+
+        if (algorithm.getName().equals(JWSAlgorithm.HS256.getName())) {
+            JWSVerifier verifier = new MACVerifier(HS256SecretKey);
+            return jwsObject.verify(verifier);
+        }
+        return false;
+    }
+
     public static boolean verify(JWSObject jwsObject) throws Exception {
         JWSHeader header = jwsObject.getHeader();
         JWSAlgorithm algorithm = header.getAlgorithm();

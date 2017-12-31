@@ -33,25 +33,36 @@ public class JPAUserEntity {
 
     private String userPassword;
 
-    @Column(name = "regDate", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date regDate;
+    @Column(name = "regDate", nullable = false, updatable = false, insertable = true)
+    private long regDate;
 
-    @Column(name = "updDate", nullable = false, updatable = true, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date updDate;
+    @Column(name = "updDate", nullable = false, updatable = true, insertable = true)
+    private long updDate;
 
-    public Date getRegDate() {
+    @PrePersist
+    void preInsert() {
+        this.regDate = new Date().getTime();
+        this.updDate = new Date().getTime();
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        this.updDate = new Date().getTime();
+    }
+
+    public long getRegDate() {
         return regDate;
     }
 
-    public void setRegDate(Date regDate) {
+    public void setRegDate(long regDate) {
         this.regDate = regDate;
     }
 
-    public Date getUpdDate() {
+    public long getUpdDate() {
         return updDate;
     }
 
-    public void setUpdDate(Date updDate) {
+    public void setUpdDate(long updDate) {
         this.updDate = updDate;
     }
 

@@ -12,16 +12,16 @@ public class OauthClient {
     private String clientSecret;
     private String[] enableScopes;
     private boolean accessRestEnable;
-    private String activeClient;
+    private boolean activeClient;
     private String authorizedGrantTypes;
     private String webServerRedirectUri;
-    private String refreshTokenValidity;
-    private String autoDeletionToken;
-    private String requiredContext;
+    private boolean refreshTokenValidity;
+    private boolean autoDeletionToken;
+    private String[] requiredContext;
     private String jwtAlgorithm;
-    private Integer codeLifetime;
-    private Integer refreshTokenLifetime;
-    private Integer accessTokenLifetime;
+    private Long codeLifetime;
+    private Long refreshTokenLifetime;
+    private Long accessTokenLifetime;
     private String[] notification;
 
     public String getName() {
@@ -72,11 +72,11 @@ public class OauthClient {
         this.accessRestEnable = accessRestEnable;
     }
 
-    public String getActiveClient() {
+    public boolean getActiveClient() {
         return activeClient;
     }
 
-    public void setActiveClient(String activeClient) {
+    public void setActiveClient(boolean activeClient) {
         this.activeClient = activeClient;
     }
 
@@ -96,27 +96,27 @@ public class OauthClient {
         this.webServerRedirectUri = webServerRedirectUri;
     }
 
-    public String getRefreshTokenValidity() {
+    public boolean getRefreshTokenValidity() {
         return refreshTokenValidity;
     }
 
-    public void setRefreshTokenValidity(String refreshTokenValidity) {
+    public void setRefreshTokenValidity(boolean refreshTokenValidity) {
         this.refreshTokenValidity = refreshTokenValidity;
     }
 
-    public String getAutoDeletionToken() {
+    public boolean getAutoDeletionToken() {
         return autoDeletionToken;
     }
 
-    public void setAutoDeletionToken(String autoDeletionToken) {
+    public void setAutoDeletionToken(boolean autoDeletionToken) {
         this.autoDeletionToken = autoDeletionToken;
     }
 
-    public String getRequiredContext() {
+    public String[] getRequiredContext() {
         return requiredContext;
     }
 
-    public void setRequiredContext(String requiredContext) {
+    public void setRequiredContext(String[] requiredContext) {
         this.requiredContext = requiredContext;
     }
 
@@ -128,27 +128,27 @@ public class OauthClient {
         this.jwtAlgorithm = jwtAlgorithm;
     }
 
-    public Integer getCodeLifetime() {
+    public Long getCodeLifetime() {
         return codeLifetime;
     }
 
-    public void setCodeLifetime(Integer codeLifetime) {
+    public void setCodeLifetime(Long codeLifetime) {
         this.codeLifetime = codeLifetime;
     }
 
-    public Integer getRefreshTokenLifetime() {
+    public Long getRefreshTokenLifetime() {
         return refreshTokenLifetime;
     }
 
-    public void setRefreshTokenLifetime(Integer refreshTokenLifetime) {
+    public void setRefreshTokenLifetime(Long refreshTokenLifetime) {
         this.refreshTokenLifetime = refreshTokenLifetime;
     }
 
-    public Integer getAccessTokenLifetime() {
+    public Long getAccessTokenLifetime() {
         return accessTokenLifetime;
     }
 
-    public void setAccessTokenLifetime(Integer accessTokenLifetime) {
+    public void setAccessTokenLifetime(Long accessTokenLifetime) {
         this.accessTokenLifetime = accessTokenLifetime;
     }
 

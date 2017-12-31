@@ -62,7 +62,7 @@ iam:
   jwt:
     key: fcf5afd7-be51-4dfc-949f-d4ab768b985d
     issuer: ${spring.application.name}
-    oldrefreshtoken-timeout: 60
+    oldRefreshTokenTimeout: 60
 
 # 시스템 이메일 정보 (옵셔널)
   mail:
@@ -120,8 +120,8 @@ clients:
     # 만기 토큰 자동 삭제.
     autoDeletionToken: true
 
-    # JWT 토큰 콘텍스트에 포함될 정보 : clientId,clientKey,managementId,scopes,type,refreshToken,userName,userId,user
-    requiredContext: clientId,clientKey,managementId,scopes,type,refreshToken,userName,userId,user
+    # JWT 토큰 콘텍스트에 포함될 정보 : clientKey,scopes,type,refreshToken,userName,user | ALL
+    requiredContext: clientKey,scopes,type,refreshToken,userName,user
 
     # JWT 토큰 알고리즘: HS256 or RS256
     jwtAlgorithm: HS256

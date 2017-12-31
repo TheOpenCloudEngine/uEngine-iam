@@ -11,8 +11,8 @@ public class OauthUser {
     private String userName;
     private String userPassword;
     private Map<String, Object> metaData;
-    private Date regDate;
-    private Date updDate;
+    private long regDate;
+    private long updDate;
 
     public String getUserName() {
         return userName;
@@ -38,19 +38,19 @@ public class OauthUser {
         this.metaData = metaData;
     }
 
-    public Date getRegDate() {
+    public long getRegDate() {
         return regDate;
     }
 
-    public void setRegDate(Date regDate) {
+    public void setRegDate(long regDate) {
         this.regDate = regDate;
     }
 
-    public Date getUpdDate() {
+    public long getUpdDate() {
         return updDate;
     }
 
-    public void setUpdDate(Date updDate) {
+    public void setUpdDate(long updDate) {
         this.updDate = updDate;
     }
 }
