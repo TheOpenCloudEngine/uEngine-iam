@@ -157,7 +157,7 @@ eureka:
 
 ---
 spring:
-  profiles: docker
+  profiles: dev,stg,prod
 
 # ======================
 #  Eureka Configuration

@@ -59,6 +59,10 @@ public class JwtUtils {
         if (algorithm.getName().equals(JWSAlgorithm.HS256.getName())) {
             JWSVerifier verifier = new MACVerifier(HS256SecretKey);
             return jwsObject.verify(verifier);
+        } else if (algorithm.getName().equals(JWSAlgorithm.RS256.getName())) {
+            RSAPublicKey publicKey = getRSAPublicKey();
+            JWSVerifier verifier = new RSASSAVerifier(publicKey);
+            return jwsObject.verify(verifier);
         }
         return false;
     }
@@ -79,20 +83,28 @@ public class JwtUtils {
         return false;
     }
 
-    public static boolean validateToken(String jwtToken) throws Exception {
+    public static boolean validateToken(String jwtToken, String HS256SecretKey) throws Exception {
         JWSObject jwsObject = JWSObject.parse(jwtToken);
-        if (!verify(jwsObject)) {
-            return false;
+        if (StringUtils.isEmpty(HS256SecretKey)) {
+            if (!verify(jwsObject)) {
+                return false;
+            }
+        } else {
+            if (!verifyWithKey(jwsObject, HS256SecretKey)) {
+                return false;
+            }
         }
+
         return true;
     }
 
-    public static boolean validateToken(String jwtToken, Date expirationTime) throws Exception {
-        JWSObject jwsObject = JWSObject.parse(jwtToken);
-        if (!verify(jwsObject)) {
+    public static boolean validateToken(String jwtToken, String HS256SecretKey, Date expirationTime) throws Exception {
+        boolean enable = validateToken(jwtToken, HS256SecretKey);
+        if (!enable) {
             return false;
         }
 
+        JWSObject jwsObject = JWSObject.parse(jwtToken);
         JSONObject jsonPayload = jwsObject.getPayload().toJSONObject();
         JWTClaimsSet jwtClaimsSet = JWTClaimsSet.parse(jsonPayload);
 

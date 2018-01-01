@@ -7,4 +7,6 @@ public interface OauthScopeService {
     OauthScope selectByName(String name);
 
     List<OauthScope> selectAll();
+
+    List<OauthScope> selectClientScopes(String clientKey);
 }

@@ -28,6 +28,8 @@ public class OauthAccessToken {
 
     @JsonIgnore
     private String scopesString;
+
+    @Column(columnDefinition = "TEXT")
     private String token;
     private String userName;
     private String clientKey;

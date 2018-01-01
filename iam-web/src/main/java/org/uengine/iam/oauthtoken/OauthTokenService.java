@@ -10,6 +10,6 @@ public interface OauthTokenService {
             OauthClient oauthClient,
             OauthAccessToken accessToken,
             String claimJson,
-            Integer lifetime,
+            long lifetime,
             String type) throws Exception;
 }

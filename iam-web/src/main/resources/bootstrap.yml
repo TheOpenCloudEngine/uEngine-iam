@@ -11,9 +11,15 @@ spring:
     config:
       uri: http://config.pas-mini.io
 
+# ui 호스트
+ui-host: http://localhost:8081/
+
 ---
 spring:
-  profiles: docker
+  profiles: dev,stg,prod
   cloud:
     config:
       uri: http://marathon-lb-internal.marathon.mesos:10000
+
+# ui 호스트
+ui-host: /

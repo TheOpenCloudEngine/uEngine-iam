@@ -13,7 +13,7 @@ public class OauthClient {
     private String[] enableScopes;
     private boolean accessRestEnable;
     private boolean activeClient;
-    private String authorizedGrantTypes;
+    private String[] authorizedGrantTypes;
     private String webServerRedirectUri;
     private boolean refreshTokenValidity;
     private boolean autoDeletionToken;
@@ -80,11 +80,11 @@ public class OauthClient {
         this.activeClient = activeClient;
     }
 
-    public String getAuthorizedGrantTypes() {
+    public String[] getAuthorizedGrantTypes() {
         return authorizedGrantTypes;
     }
 
-    public void setAuthorizedGrantTypes(String authorizedGrantTypes) {
+    public void setAuthorizedGrantTypes(String[] authorizedGrantTypes) {
         this.authorizedGrantTypes = authorizedGrantTypes;
     }
 
