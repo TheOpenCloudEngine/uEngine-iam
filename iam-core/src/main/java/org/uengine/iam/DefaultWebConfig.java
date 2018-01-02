@@ -14,8 +14,6 @@ import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.util.UrlPathHelper;
-import org.uengine.iam.oauthuser.OauthUserRepository;
-import org.uengine.iam.security.AESPasswordEncoder;
 import org.uengine.iam.security.CorsFilter;
 import org.uengine.iam.util.ApplicationContextRegistry;
 
@@ -23,7 +21,7 @@ import org.uengine.iam.util.ApplicationContextRegistry;
  * Created by uengine on 2017. 11. 1..
  */
 @Configuration
-public class WebConfig extends WebMvcConfigurerAdapter {
+public class DefaultWebConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     Environment environment;
@@ -37,15 +35,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         urlPathHelper.setUrlDecode(false);
         configurer.setUrlPathHelper(urlPathHelper);
         configurer.setUseRegisteredSuffixPatternMatch(true);
-    }
-
-
-    @Bean
-    public AESPasswordEncoder passwordEncoder() {
-        AESPasswordEncoder passwordEncoder = new AESPasswordEncoder();
-        passwordEncoder.setSecretKey1(environment.getProperty("security.password.encoder.secret1"));
-        passwordEncoder.setSecretKey2(environment.getProperty("security.password.encoder.secret2"));
-        return passwordEncoder;
     }
 
     @Bean
@@ -64,16 +53,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         Scheduler scheduler = schedulerFactory.getScheduler();
         scheduler.start();
         return scheduler;
-    }
-
-    @Bean
-    public OauthUserRepository oauthUserRepository() throws Exception {
-        try {
-            Class<?> repository = Class.forName(environment.getProperty("user-provider.interface"));
-            return (OauthUserRepository) repository.newInstance();
-        } catch (Exception ex) {
-            throw new Exception();
-        }
     }
 
     @Bean

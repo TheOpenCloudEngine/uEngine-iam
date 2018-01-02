@@ -1,7 +1,6 @@
 package org.uengine.iam.provider;
 
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,8 +10,6 @@ import org.uengine.iam.oauthuser.OauthUser;
 import org.uengine.iam.oauthuser.OauthUserPage;
 import org.uengine.iam.oauthuser.OauthUserRepository;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 

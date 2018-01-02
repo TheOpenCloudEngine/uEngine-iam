@@ -41,14 +41,6 @@ spring:
     username: root
     password:
 
-# =============================================
-#  레파지토리 - 유저 데이터 프로바이더 클래스입니다.
-#  커스텀 implement 클래스를 등록할 수 있습니다.
-# =============================================
-user-provider:
-  interface: org.uengine.iam.provider.MyUserRepositoryImpl
-
-
 # ========================================
 #  IAM 시스템 Configuration
 # ========================================

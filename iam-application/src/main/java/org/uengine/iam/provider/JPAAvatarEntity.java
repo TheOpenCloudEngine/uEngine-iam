@@ -1,13 +1,6 @@
 package org.uengine.iam.provider;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.uengine.iam.util.JsonUtils;
-
 import javax.persistence.*;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by uengine on 2015. 6. 3..
