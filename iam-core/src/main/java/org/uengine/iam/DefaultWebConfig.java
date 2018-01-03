@@ -23,11 +23,13 @@ import org.uengine.iam.util.ApplicationContextRegistry;
 @Configuration
 public class DefaultWebConfig extends WebMvcConfigurerAdapter {
 
-    @Autowired
-    Environment environment;
+    //시스템 어드민,패스워드로만 rest 컨트롤 가능
 
     @Autowired
-    ApplicationContext applicationContext;
+    private Environment environment;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {

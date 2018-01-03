@@ -13,19 +13,12 @@ var IAM = function (host, contextPath) {
         this.baseUrl = this.baseUrl + this.contextPath;
     }
     this.user = undefined;
-    this.management = undefined;
 
     $(window).ajaxSend(function (e, xhr, options) {
         var token = localStorage.getItem('uengine-iam-access-token');
-        var managementKey = localStorage.getItem('uengine-iam-management-key');
-        var managementSecret = localStorage.getItem('uengine-iam-management-secret');
         var clientKey = localStorage.getItem('uengine-iam-client-key');
         var clientSecret = localStorage.getItem('uengine-iam-client-secret');
         xhr.setRequestHeader('Authorization', token);
-        if (managementKey && managementSecret) {
-            xhr.setRequestHeader('management-key', managementKey);
-            xhr.setRequestHeader('management-secret', managementSecret);
-        }
         if (clientKey && clientSecret) {
             xhr.setRequestHeader('client-key', clientKey);
             xhr.setRequestHeader('client-secret', clientSecret);
@@ -35,75 +28,23 @@ var IAM = function (host, contextPath) {
 IAM.prototype = {
     logout: function () {
         localStorage.removeItem('uengine-iam-access-token');
-        localStorage.removeItem('uengine-iam-management-id');
-        localStorage.removeItem('uengine-iam-management-key');
-        localStorage.removeItem('uengine-iam-management-secret');
         localStorage.removeItem('uengine-iam-client-key');
         localStorage.removeItem('uengine-iam-client-secret');
-    },
-    setDefaultManagement: function (id, key, secret) {
-        localStorage.setItem('uengine-iam-management-id', id);
-        localStorage.setItem('uengine-iam-management-key', key);
-        localStorage.setItem('uengine-iam-management-secret', secret);
-    },
-    getDefaultManagement: function () {
-        return localStorage.getItem('uengine-iam-management-id');
     },
     setDefaultClient: function (key, secret) {
         localStorage.setItem('uengine-iam-client-key', key);
         localStorage.setItem('uengine-iam-client-secret', secret);
     },
-    adminLogin: function (data) {
-        var me = this;
-        var username = data.username;
-        var password = data.password;
-        var deferred = $.Deferred();
-        var promise = $.ajax({
-            type: "POST",
-            url: me.baseUrl + '/rest/v1/access_token',
-            data: 'username=' + username + '&password=' + password,
-            contentType: "application/x-www-form-urlencoded",
-            dataType: "json"
-        });
-        promise.done(function (response) {
-            if (response['access_token']) {
-                console.log('login success');
-                var token = response['access_token'];
-                localStorage.setItem("uengine-iam-access-token", token);
-                deferred.resolve(response);
-            } else {
-                console.log('login failed');
-                localStorage.removeItem("uengine-iam-access-token");
-                deferred.reject();
-            }
-        });
-        promise.fail(function (response, status, errorThrown) {
-            console.log('login failed', errorThrown, response.responseText);
-            localStorage.removeItem("uengine-iam-access-token");
-            deferred.reject(response);
-        });
-        return deferred.promise();
-    },
-    adminValidateToken: function () {
-        console.log('Validating token...');
-        var me = this;
-        var token = localStorage.getItem("uengine-iam-access-token");
-        var deferred = $.Deferred();
-        var promise = $.ajax({
+    adminLogin: function (username, password) {
+        localStorage.setItem('uengine-iam-client-key', username);
+        localStorage.setItem('uengine-iam-client-secret', password);
+        var options = {
             type: "GET",
-            url: me.baseUrl + '/rest/v1/token_info?authorization=' + token,
+            url: '/rest/v1/security',
             dataType: "json",
             async: false
-        });
-        promise.done(function (response) {
-            console.log('validateToken success');
-            deferred.resolve(response);
-        });
-        promise.fail(function (response, status, errorThrown) {
-            console.log('validateToken failed', errorThrown, response.responseText);
-            deferred.reject(response);
-        });
-        return deferred.promise();
+        };
+        return this.send(options);
     },
     passwordCredentialsLogin: function (username, password, scope, token_type, claim) {
         var data = {
@@ -152,61 +93,22 @@ IAM.prototype = {
         };
         return this.send(options);
     },
-    getManagements: function () {
+    getUser: function (userName) {
         var options = {
             type: "GET",
-            url: '/rest/v1/management',
-            dataType: "json",
-            async: false
-        };
-        return this.send(options);
-    },
-    createManagement: function (data) {
-        var options = {
-            type: "POST",
-            url: '/rest/v1/management',
-            data: JSON.stringify(data),
-            contentType: "application/json",
-            dataType: 'text',
-            resolve: function (response, status, xhr) {
-                var locationHeader = xhr.getResponseHeader('Location');
-                return locationHeader.substring(locationHeader.lastIndexOf('/') + 1);
-            }
-        };
-        return this.send(options);
-    },
-    updateManagement: function (id, data) {
-        var options = {
-            type: "PUT",
-            url: '/rest/v1/management/' + id,
-            data: JSON.stringify(data),
-            contentType: "application/json",
+            url: '/rest/v1//user/search/findByUserName?userName=' + userName,
             dataType: "json"
         };
         return this.send(options);
     },
-    deleteManagement: function (id) {
-        var options = {
-            type: "DELETE",
-            url: '/rest/v1/management/' + id
-        };
-        return this.send(options);
-    },
-    getUser: function (id) {
-        var options = {
-            type: "GET",
-            url: '/rest/v1/user/' + id,
-            dataType: "json"
-        };
-        return this.send(options);
-    },
-    getUserSearch: function (searchKey, offset, limit) {
+    getUserSearch: function (userName, page, size) {
         var data = {
-            offset: offset ? offset : 0,
-            limit: limit ? limit : 100,
-            audit: 'NONE'
+            userName: userName,
+            page: page,
+            size: size
         };
-        var url = searchKey ? '/rest/v1/user/search/' + searchKey : '/rest/v1/user/pagination';
+        console.log('getUserSearch', data);
+        var url = userName ? '/rest/v1/user/search/findLikeUserName' : '/rest/v1/user';
         var options = {
             type: "GET",
             url: url,
@@ -214,14 +116,14 @@ IAM.prototype = {
             data: data,
             resolve: function (response, status, xhr) {
                 var total = parseInt(xhr.getResponseHeader('x-uengine-pagination-totalnbrecords'));
-                var filtered = parseInt(xhr.getResponseHeader('x-uengine-pagination-maxnbrecords'));
-                console.log(total, filtered);
+                var offset = parseInt(xhr.getResponseHeader('x-uengine-pagination-currentoffset'));
+                console.log(total, offset);
                 return {
                     data: response,
                     total: total,
-                    filtered: filtered,
-                    offset: data.offset,
-                    limit: data.limit
+                    offset: offset,
+                    page: page,
+                    size: size
                 };
             }
         };
@@ -233,39 +135,31 @@ IAM.prototype = {
             url: '/rest/v1/user',
             data: JSON.stringify(data),
             contentType: "application/json",
-            dataType: 'text',
-            resolve: function (response, status, xhr) {
-                var locationHeader = xhr.getResponseHeader('Location');
-                return locationHeader.substring(locationHeader.lastIndexOf('/') + 1);
-            }
+            dataType: 'json'
         };
         return this.send(options);
     },
-    updateUser: function (id, data) {
+    updateUser: function (userName, data) {
+        data['userName'] = userName;
         var options = {
             type: "PUT",
-            url: '/rest/v1/user/' + id,
+            url: '/rest/v1/user',
             data: JSON.stringify(data),
             contentType: "application/json",
             dataType: "json"
         };
         return this.send(options);
     },
-    deleteUser: function (id) {
+    deleteUser: function (userName) {
         var options = {
             type: "DELETE",
-            url: '/rest/v1/user/' + id
+            url: '/rest/v1/user?userName=' + userName
         };
         return this.send(options);
     },
-    createUserAvatarByFormData: function (file, contentType, id, userName) {
+    createUserAvatarByFormData: function (file, contentType, userName) {
         var formData = new FormData();
-        if (id) {
-            formData.append('id', id);
-        }
-        if (userName) {
-            formData.append('userName', userName);
-        }
+        formData.append('userName', userName);
         formData.append('contentType', contentType);
         formData.append('file', file);
         var options = {
@@ -273,34 +167,31 @@ IAM.prototype = {
             url: '/rest/v1/avatar/formdata',
             data: formData,
             contentType: false,
-            processData: false
+            processData: false,
+            dataType: 'json'
         };
         return this.send(options);
     },
-    deleteUserAvatarByUserName: function (userName) {
+    deleteUserAvatar: function (userName) {
         var options = {
             type: "DELETE",
             url: '/rest/v1/avatar?userName=' + userName
         };
         return this.send(options);
     },
-    deleteUserAvatarById: function (id) {
-        var options = {
-            type: "DELETE",
-            url: '/rest/v1/avatar?id=' + id
-        };
-        return this.send(options);
-    },
-    getUserAvatarUrlById: function (id) {
-        return this.baseUrl + '/rest/v1/avatar?id=' + id;
-    },
-    getUserAvatarUrlByUserName: function (userName) {
+    getUserAvatarUrl: function (userName) {
         return this.baseUrl + '/rest/v1/avatar?userName=' + userName;
     },
-    signUp: function (redirect_url, data) {
+    signUp: function (redirect_url, userData) {
+        var clientKey = localStorage.getItem('uengine-iam-client-key');
+        var data = {
+            clientKey: clientKey,
+            redirect_url: redirect_url,
+            oauthUser: userData
+        };
         var options = {
             type: "POST",
-            url: '/rest/v1/user/signup?redirect_url=' + redirect_url,
+            url: '/rest/v1/user/signup',
             data: JSON.stringify(data),
             contentType: "application/json",
             dataType: 'json'
@@ -308,15 +199,18 @@ IAM.prototype = {
         return this.send(options);
     },
     signUpVerification: function (token) {
+        var clientKey = localStorage.getItem('uengine-iam-client-key');
         var options = {
             type: "GET",
-            url: '/rest/v1/user/signup/verification?token=' + token,
+            url: '/rest/v1/user/signup/verification?clientKey=' + clientKey + '&token=' + token,
             dataType: "json"
         };
         return this.send(options);
     },
     signUpAccept: function (token) {
+        var clientKey = localStorage.getItem('uengine-iam-client-key');
         var data = {
+            clientKey: clientKey,
             token: token
         };
         var options = {
@@ -330,12 +224,17 @@ IAM.prototype = {
     },
 
     forgotPassword: function (redirect_url, userName) {
+        var clientKey = localStorage.getItem('uengine-iam-client-key');
         var data = {
-            userName: userName
+            clientKey: clientKey,
+            redirect_url: redirect_url,
+            oauthUser: {
+                userName: userName
+            }
         };
         var options = {
             type: "POST",
-            url: '/rest/v1/user/forgot?redirect_url=' + redirect_url,
+            url: '/rest/v1/user/forgot',
             data: JSON.stringify(data),
             contentType: "application/json",
             dataType: 'json'
@@ -343,15 +242,18 @@ IAM.prototype = {
         return this.send(options);
     },
     forgotPasswordVerification: function (token) {
+        var clientKey = localStorage.getItem('uengine-iam-client-key');
         var options = {
             type: "GET",
-            url: '/rest/v1/user/forgot/verification?token=' + token,
+            url: '/rest/v1/user/forgot/verification?clientKey=' + clientKey + '&token=' + token,
             dataType: "json"
         };
         return this.send(options);
     },
     forgotPasswordAccept: function (token, password) {
+        var clientKey = localStorage.getItem('uengine-iam-client-key');
         var data = {
+            clientKey: clientKey,
             token: token,
             password: password
         };
@@ -365,104 +267,19 @@ IAM.prototype = {
         return this.send(options);
     },
 
-    getClient: function (id) {
+    getClient: function (clientKey) {
         var options = {
             type: "GET",
-            url: '/rest/v1/client/' + id,
+            url: '/rest/v1/client/' + clientKey,
             dataType: "json"
         };
         return this.send(options);
     },
-    getClientSearch: function (searchKey, offset, limit) {
-        var data = {
-            offset: offset ? offset : 0,
-            limit: limit ? limit : 100,
-            audit: 'NONE'
-        };
-        var url = searchKey ? '/rest/v1/client/search/' + searchKey : '/rest/v1/client/pagination';
+    getAllClient: function () {
         var options = {
             type: "GET",
-            url: url,
-            dataType: 'json',
-            data: data,
-            resolve: function (response, status, xhr) {
-                var total = parseInt(xhr.getResponseHeader('x-uengine-pagination-totalnbrecords'));
-                var filtered = parseInt(xhr.getResponseHeader('x-uengine-pagination-maxnbrecords'));
-                return {
-                    data: response,
-                    total: total,
-                    filtered: filtered,
-                    offset: data.offset,
-                    limit: data.limit
-                };
-            }
-        };
-        return this.send(options);
-    },
-    createClient: function (data) {
-        var options = {
-            type: "POST",
             url: '/rest/v1/client',
-            data: JSON.stringify(data),
-            contentType: "application/json",
-            dataType: 'text',
-            resolve: function (response, status, xhr) {
-                var locationHeader = xhr.getResponseHeader('Location');
-                return locationHeader.substring(locationHeader.lastIndexOf('/') + 1);
-            }
-        };
-        return this.send(options);
-    },
-    updateClient: function (id, data) {
-        var options = {
-            type: "PUT",
-            url: '/rest/v1/client/' + id,
-            data: JSON.stringify(data),
-            contentType: "application/json",
             dataType: "json"
-        };
-        return this.send(options);
-    },
-    deleteClient: function (id) {
-        var options = {
-            type: "DELETE",
-            url: '/rest/v1/client/' + id
-        };
-        return this.send(options);
-    },
-    getClientScopes: function (clientId) {
-        var options = {
-            type: "GET",
-            url: '/rest/v1/client/' + clientId + '/scope',
-            dataType: "json"
-        };
-        return this.send(options);
-    },
-    getClientScope: function (clientId, scopeId) {
-        var options = {
-            type: "GET",
-            url: '/rest/v1/client/' + clientId + '/scope/' + scopeId,
-            dataType: "json"
-        };
-        return this.send(options);
-    },
-    createClientScope: function (clientId, scopeId) {
-        var options = {
-            type: "POST",
-            url: '/rest/v1/client/' + clientId + '/scope/' + scopeId,
-            contentType: "application/json",
-            dataType: 'text',
-            resolve: function (response, status, xhr) {
-                var locationHeader = xhr.getResponseHeader('Location');
-                return locationHeader.substring(locationHeader.lastIndexOf('/') + 1);
-            }
-        };
-        return this.send(options);
-    },
-    deleteClientScope: function (clientId, scopeId) {
-        var options = {
-            type: "DELETE",
-            url: '/rest/v1/client/' + clientId + '/scope/' + scopeId
         };
         return this.send(options);
     },
@@ -474,123 +291,19 @@ IAM.prototype = {
         };
         return this.send(options);
     },
-    getScope: function (id) {
+    getScope: function (scopeName) {
         var options = {
             type: "GET",
-            url: '/rest/v1/scope/' + id,
+            url: '/rest/v1/scope/' + scopeName,
             dataType: "json"
         };
         return this.send(options);
     },
-    getScopeSearch: function (searchKey, offset, limit) {
-        var data = {
-            offset: offset ? offset : 0,
-            limit: limit ? limit : 100,
-            audit: 'NONE'
-        };
-        var url = searchKey ? '/rest/v1/scope/search/' + searchKey : '/rest/v1/scope/pagination';
+    getAllTemplate: function (clientKey) {
         var options = {
             type: "GET",
-            url: url,
-            dataType: 'json',
-            data: data,
-            resolve: function (response, status, xhr) {
-                var total = parseInt(xhr.getResponseHeader('x-uengine-pagination-totalnbrecords'));
-                var filtered = parseInt(xhr.getResponseHeader('x-uengine-pagination-maxnbrecords'));
-                return {
-                    data: response,
-                    total: total,
-                    filtered: filtered,
-                    offset: data.offset,
-                    limit: data.limit
-                };
-            }
-        };
-        return this.send(options);
-    },
-    createScope: function (data) {
-        var options = {
-            type: "POST",
-            url: '/rest/v1/scope',
-            data: JSON.stringify(data),
-            contentType: "application/json",
-            dataType: 'text',
-            resolve: function (response, status, xhr) {
-                var locationHeader = xhr.getResponseHeader('Location');
-                return locationHeader.substring(locationHeader.lastIndexOf('/') + 1);
-            }
-        };
-        return this.send(options);
-    },
-    updateScope: function (id, data) {
-        var options = {
-            type: "PUT",
-            url: '/rest/v1/scope/' + id,
-            data: JSON.stringify(data),
-            contentType: "application/json",
-            dataType: "json"
-        };
-        return this.send(options);
-    },
-    deleteScope: function (id) {
-        var options = {
-            type: "DELETE",
-            url: '/rest/v1/scope/' + id
-        };
-        return this.send(options);
-    },
-    getNotificationConfig: function (clientId) {
-        var options = {
-            type: "GET",
-            url: '/rest/v1/client/' + clientId + '/notification_config',
+            url: '/rest/v1/client/' + clientKey + '/template',
             dataType: 'json'
-        };
-        return this.send(options);
-    },
-    updateNotificationConfig: function (clientId, data) {
-        var options = {
-            type: "POST",
-            url: '/rest/v1/client/' + clientId + '/notification_config',
-            data: JSON.stringify(data),
-            contentType: "application/json",
-            dataType: 'text'
-        };
-        return this.send(options);
-    },
-
-    getAllTemplate: function (clientId) {
-        var options = {
-            type: "GET",
-            url: '/rest/v1/client/' + clientId + '/template',
-            dataType: 'json'
-        };
-        return this.send(options);
-    },
-
-    createTemplate: function (clientId, template_type, locale, data) {
-        var options = {
-            type: "POST",
-            url: '/rest/v1/client/' + clientId + '/template/' + template_type + '/' + locale,
-            data: JSON.stringify(data),
-            contentType: "application/json",
-            dataType: 'text'
-        };
-        return this.send(options);
-    },
-
-    deleteTemplate: function (clientId, template_type, locale) {
-        var options = {
-            type: "DELETE",
-            url: '/rest/v1/client/' + clientId + '/template/' + template_type + '/' + locale
-        };
-        return this.send(options);
-    },
-
-    setDefaultTemplate: function (clientId, template_type, locale) {
-        var options = {
-            type: "PUT",
-            url: '/rest/v1/client/' + clientId + '/template/' + template_type + '/' + locale,
-            dataType: 'text'
         };
         return this.send(options);
     },

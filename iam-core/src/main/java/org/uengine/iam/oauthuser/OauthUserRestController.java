@@ -21,22 +21,6 @@ import java.util.List;
 @RequestMapping("/rest/v1")
 public class OauthUserRestController {
 
-    //어드민 콘텍스트를 RestAuthService 로 대체할 것.
-
-    //    @Autowired
-//    @Qualifier("config")
-//    private Properties config;
-//
-//    @Autowired
-//    private OauthUserService oauthUserService;
-//
-//    @Autowired
-//    private RestAuthService restAuthService;
-//
-//    @Autowired
-//    private ProxyService proxyService;
-//
-
     @Autowired
     private OauthUserRepository oauthUserRepository;
 
@@ -90,7 +74,9 @@ public class OauthUserRestController {
      * @return
      */
     @RequestMapping(value = "/user", method = RequestMethod.PUT)
-    public ResponseEntity<OauthUser> updateUser(HttpServletRequest request, HttpServletResponse response, @RequestBody OauthUser oauthUser) {
+    public ResponseEntity<OauthUser> updateUser(HttpServletRequest request,
+                                                HttpServletResponse response,
+                                                @RequestBody OauthUser oauthUser) {
         OauthUser existUser = oauthUserRepository.findByUserName(oauthUser.getUserName());
         if (existUser == null) {
             new ResponseEntity<>(HttpStatus.NOT_FOUND);
