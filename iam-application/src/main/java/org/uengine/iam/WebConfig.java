@@ -25,12 +25,6 @@ import org.uengine.iam.util.ApplicationContextRegistry;
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
 
-    @Autowired
-    Environment environment;
-
-    @Autowired
-    ApplicationContext applicationContext;
-
     @Bean
     public OauthUserRepository oauthUserRepository() throws Exception {
         return new MyUserRepositoryImpl();
