@@ -25,23 +25,13 @@ public class AccessToeknRestController {
     @Autowired
     private OauthClientService clientService;
 
+    @Autowired
+    private OauthTokenService tokenService;
+
 
     @RequestMapping(value = "/token", method = RequestMethod.GET, produces = "application/json")
     public Map listToken(HttpServletRequest request, HttpServletResponse response) {
-
-        Map map = new HashMap();
-        List<OauthClient> clients = clientService.selectAll();
-        long nowTime = new Date().getTime();
-        for (OauthClient client : clients) {
-            String clientKey = client.getClientKey();
-            Long accessTokenLifetime = client.getAccessTokenLifetime();
-            Long expirationTime = nowTime - (accessTokenLifetime * 1000);
-            Map countMap = new HashMap();
-            countMap.put("active", tokenRepository.countActiveTokenForClient(client.getClientKey(), expirationTime));
-            countMap.put("expired", tokenRepository.countExpiredTokenForClient(client.getClientKey(), expirationTime));
-            map.put(clientKey, countMap);
-        }
-        return map;
+        return tokenService.tokenStatus();
     }
 
     @RequestMapping(value = "/token/{token}", method = RequestMethod.GET, produces = "application/json")

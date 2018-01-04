@@ -59,8 +59,6 @@ iam:
 # 시스템 이메일 정보 (옵셔널)
   mail:
     host: smtp.gmail.com
-    #username: flamingo.workflow@gmail.com
-    #password: princoprinco9
     username: "sppark@uengine.org"
     password: "!gosu23546"
     port: 587

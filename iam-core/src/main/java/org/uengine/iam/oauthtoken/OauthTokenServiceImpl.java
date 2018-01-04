@@ -13,6 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.uengine.iam.oauthclient.OauthClient;
+import org.uengine.iam.oauthclient.OauthClientService;
 import org.uengine.iam.oauthuser.OauthUser;
 import org.uengine.iam.util.JsonUtils;
 import org.uengine.iam.util.JwtUtils;
@@ -53,6 +54,12 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
     @Autowired
     Environment environment;
+
+    @Autowired
+    private OauthClientService clientService;
+
+    @Autowired
+    private OauthTokenRepository tokenRepository;
 
     @Override
     public String generateJWTToken(
@@ -125,5 +132,22 @@ public class OauthTokenServiceImpl implements OauthTokenService {
             signedJWT.sign(signer);
             return signedJWT.serialize();
         }
+    }
+
+    @Override
+    public Map tokenStatus() {
+        Map map = new HashMap();
+        List<OauthClient> clients = clientService.selectAll();
+        long nowTime = new Date().getTime();
+        for (OauthClient client : clients) {
+            String clientKey = client.getClientKey();
+            Long accessTokenLifetime = client.getAccessTokenLifetime();
+            Long expirationTime = nowTime - (accessTokenLifetime * 1000);
+            Map countMap = new HashMap();
+            countMap.put("active", tokenRepository.countActiveTokenForClient(client.getClientKey(), expirationTime));
+            countMap.put("expired", tokenRepository.countExpiredTokenForClient(client.getClientKey(), expirationTime));
+            map.put(clientKey, countMap);
+        }
+        return map;
     }
 }
