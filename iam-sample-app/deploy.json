@@ -1,18 +1,18 @@
 {
-  "id": "/uengine-cloud-server",
+  "id": "/uengine-iam",
   "cmd": null,
-  "cpus": 1,
-  "mem": 1024,
+  "cpus": 0.5,
+  "mem": 512,
   "disk": 0,
   "instances": 1,
   "acceptedResourceRoles": [
-    "slave_public"
+    "*"
   ],
   "container": {
     "type": "DOCKER",
     "docker": {
       "forcePullImage": true,
-      "image": "sppark/uengine-cloud-server:v1",
+      "image": "sppark/uengine-iam:v1",
       "parameters": [],
       "privileged": false
     },
@@ -23,7 +23,7 @@
         "hostPort": 0,
         "labels": {},
         "protocol": "tcp",
-        "servicePort": 10005
+        "servicePort": 10003
       }
     ]
   },
@@ -45,7 +45,7 @@
   ],
   "labels": {
     "HAPROXY_GROUP": "external,internal",
-    "HAPROXY_0_VHOST": "cloud-server.pas-mini.io"
+    "HAPROXY_0_VHOST": "iam.pas-mini.io"
   },
   "networks": [
     {
