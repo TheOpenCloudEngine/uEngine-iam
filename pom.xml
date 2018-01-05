@@ -13,8 +13,8 @@
     <modules>
         <module>iam-common</module>
         <module>iam-core</module>
-        <module>iam-application</module>
         <module>iam-java-client</module>
+        <module>iam-sample-app</module>
     </modules>
 
     <parent>

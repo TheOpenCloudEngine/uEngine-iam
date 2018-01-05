@@ -16,7 +16,7 @@ ui-host: http://localhost:8081/
 
 ---
 spring:
-  profiles: dev,stg,prod
+  profiles: docker
   cloud:
     config:
       uri: http://marathon-lb-internal.marathon.mesos:10000

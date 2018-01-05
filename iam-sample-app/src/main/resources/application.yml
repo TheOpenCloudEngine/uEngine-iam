@@ -22,25 +22,6 @@ server:
   port: 8080
   servletPath: /
 
----
-# =============================================
-#  레파지토리 - 데이터 베이스 정보입니다.
-# =============================================
-
-spring:
-  profiles: local
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        show_sql: true
-  datasource:
-    url: jdbc:mysql://localhost:3306/msa
-    username: root
-    password:
-
 # ========================================
 #  IAM 시스템 Configuration
 # ========================================
@@ -128,6 +109,25 @@ clients:
     # 사용자 알림 메일 발송 SIGN_UP,SIGNED_UP,FORGOT_PASSWORD,PASSWORD_CHANGED | ALL
     notification: ALL
 
+---
+# =============================================
+#  레파지토리 - 데이터 베이스 정보입니다.
+# =============================================
+
+spring:
+  profiles: local
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        show_sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/msa
+    username: root
+    password:
+
 # ======================
 #  Eureka Configuration
 # ======================
@@ -147,7 +147,18 @@ eureka:
 
 ---
 spring:
-  profiles: dev,stg,prod
+  profiles: docker
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        show_sql: true
+  datasource:
+    url: jdbc:mysql://${vcap.services.db.internal}/uengine
+    username: root
+    password: my-secret-pw
 
 # ======================
 #  Eureka Configuration
