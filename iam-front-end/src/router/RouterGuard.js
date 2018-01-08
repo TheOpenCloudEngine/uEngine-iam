@@ -18,7 +18,7 @@ module.exports = function (iam) {
         next(result);
       } else {
         next({
-          path: '/auth/login',
+          path: '/admin/login',
           query: {
             redirect: to.fullPath
           }

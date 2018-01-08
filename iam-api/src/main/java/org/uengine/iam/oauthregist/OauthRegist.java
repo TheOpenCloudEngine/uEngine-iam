@@ -36,6 +36,17 @@ public class OauthRegist {
     @JsonIgnore
     private String oauthUserJson;
 
+    @Column(columnDefinition = "TEXT")
+    private String authorizeResponse;
+
+    public String getAuthorizeResponse() {
+        return authorizeResponse;
+    }
+
+    public void setAuthorizeResponse(String authorizeResponse) {
+        this.authorizeResponse = authorizeResponse;
+    }
+
     public OauthUser getOauthUser() {
         try {
             Map map = JsonUtils.unmarshal(this.oauthUserJson);

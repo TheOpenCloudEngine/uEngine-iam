@@ -58,14 +58,14 @@ public class OauthLoginController {
             if (oauthUser == null) {
                 String uiHost = environment.getProperty("ui-host");
                 String encodeResult = URLEncoder.encode(JsonUtils.marshal(authorizeResponse), "UTF-8");
-                response.sendRedirect(uiHost + "#/login?authorizeResponse=" + encodeResult + "&status=fail");
+                response.sendRedirect(uiHost + "#/auth/login?authorizeResponse=" + encodeResult + "&status=fail");
             } else {
                 authorizeResponse.setOauthUser(oauthUser);
                 oauthService.processAuthorize(authorizeResponse, response);
             }
         } catch (Exception ex) {
             String uiHost = environment.getProperty("ui-host");
-            response.sendRedirect(uiHost + "#/error");
+            response.sendRedirect(uiHost + "#/auth/error");
         }
     }
 
@@ -113,7 +113,7 @@ public class OauthLoginController {
         } else {
             String uiHost = environment.getProperty("ui-host");
             String encodeResult = URLEncoder.encode(JsonUtils.marshal(authorizeResponse), "UTF-8");
-            response.sendRedirect(uiHost + "#/login?authorizeResponse=" + encodeResult);
+            response.sendRedirect(uiHost + "#/auth/login?authorizeResponse=" + encodeResult);
         }
     }
 }

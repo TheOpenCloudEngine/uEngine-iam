@@ -6,9 +6,9 @@ import org.uengine.iam.oauthuser.OauthUser;
 
 public interface OauthRegistService {
 
-    OauthRegist singUp(OauthClient oauthClient, OauthUser oauthUser, String redirect_url) throws Exception;
+    OauthRegist singUp(OauthClient oauthClient, OauthUser oauthUser, String redirect_url, String authorizeResponse) throws Exception;
 
-    OauthRegist forgotPassword(OauthClient oauthClient, OauthUser oauthUser, String redirect_url) throws Exception;
+    OauthRegist forgotPassword(OauthClient oauthClient, OauthUser oauthUser, String redirect_url, String authorizeResponse) throws Exception;
 
     OauthUser verification(OauthClient oauthClient, String token, NotificationType notification_type) throws Exception;
 

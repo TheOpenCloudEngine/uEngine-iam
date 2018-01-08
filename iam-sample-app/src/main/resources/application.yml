@@ -127,6 +127,10 @@ spring:
     url: jdbc:mysql://localhost:3306/msa
     username: root
     password:
+#  datasource:
+#    url: jdbc:mysql://192.168.99.100:13306/uengine
+#    username: root
+#    password: my-secret-pw
 
 # ======================
 #  Eureka Configuration

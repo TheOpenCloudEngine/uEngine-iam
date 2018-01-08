@@ -10,10 +10,12 @@ public interface OauthUserRepository {
 
     OauthUser update(OauthUser oauthUser);
 
+    //필수
     OauthUser findByUserName(String userName);
 
     OauthUserPage findLikeUserName(String searchKey, Pageable pageable);
 
+    //필수
     OauthUser findByUserNameAndUserPassword(String userName, String userPassword);
 
     void deleteByUserName(String userName);

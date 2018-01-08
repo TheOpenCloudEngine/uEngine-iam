@@ -12,7 +12,7 @@
 
     <modules>
         <module>iam-common</module>
-        <module>iam-core</module>
+        <module>iam-api</module>
         <module>iam-java-client</module>
         <module>iam-sample-app</module>
     </modules>

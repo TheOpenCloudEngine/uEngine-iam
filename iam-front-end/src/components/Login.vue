@@ -1,6 +1,7 @@
 <template>
-  <div class="fullscreen">
-    <form method="post" :action="backendUrl + '/oauth/login'">
+  <div class="fullscreen" v-if="command">
+
+    <form v-if="command === 'login'" method="post" :action="backendUrl + '/oauth/login'">
       <md-card class="login-box">
         <img class="logo" src="/static/logo/logo_bright.png">
 
@@ -16,8 +17,9 @@
 
           <md-card-content>
             <md-input-container>
-              <label>아이디</label>
+              <label>E-mail</label>
               <md-input name="userName"
+                        v-model="userName"
                         type="text"
                         required></md-input>
             </md-input-container>
@@ -25,6 +27,7 @@
             <md-input-container>
               <label>패스워드</label>
               <md-input name="userPassword"
+                        v-model="userPassword"
                         label="Enter your password"
                         type="password"
                         required></md-input>
@@ -33,12 +36,135 @@
         </md-card-area>
 
         <md-input-container style="display: none">
-          <md-input name="authorizeResponse" v-model="authorizeResponse" type="hidden"></md-input>
+          <md-input name="authorizeResponse" v-model="authorizeResponseString" type="hidden"></md-input>
         </md-input-container>
 
         <md-card-actions>
           <md-button type="submit">Login</md-button>
+          <md-button v-on:click="move('signup')">Sign Up</md-button>
+          <md-button v-on:click="move('forgot')">Forgot?</md-button>
         </md-card-actions>
+      </md-card>
+    </form>
+
+    <form v-if="command === 'signup'" @submit.prevent="signup">
+      <md-card class="login-box">
+        <img class="logo" src="/static/logo/logo_bright.png">
+
+        <md-card-area>
+          <md-card-header>
+            <div class="md-title"><span style="font-weight: bold">유엔진</span> 솔루션즈</div>
+            <br>
+            <div class="md-subhead">회원 가입</div>
+          </md-card-header>
+
+          <md-card-content>
+            <md-input-container>
+              <label>E-mail</label>
+              <md-input name="userName"
+                        v-model="userName"
+                        type="text"
+                        required></md-input>
+            </md-input-container>
+
+            <md-input-container>
+              <label>패스워드</label>
+              <md-input name="userPassword"
+                        v-model="userPassword"
+                        label="Enter your password"
+                        type="password"
+                        required></md-input>
+            </md-input-container>
+
+            <md-input-container>
+              <label>성함</label>
+              <md-input v-model="name"
+                        type="text"
+                        required></md-input>
+            </md-input-container>
+          </md-card-content>
+        </md-card-area>
+
+        <md-card-actions>
+          <md-button type="submit">Sign up</md-button>
+          <md-button v-on:click="move('login')">Go login</md-button>
+          <md-button v-on:click="move('forgot')">Forgot?</md-button>
+        </md-card-actions>
+      </md-card>
+    </form>
+
+    <form v-if="command === 'forgot'" @submit.prevent="forgot">
+      <md-card class="login-box">
+        <img class="logo" src="/static/logo/logo_bright.png">
+
+        <md-card-area>
+          <md-card-header>
+            <div class="md-title"><span style="font-weight: bold">유엔진</span> 솔루션즈</div>
+            <br>
+            <div class="md-subhead">비밀번호 분실</div>
+            <div class="md-subhead">회원가입시 등록한 이메일을 입력하세요</div>
+          </md-card-header>
+
+          <md-card-content>
+            <md-input-container>
+              <label>E-mail</label>
+              <md-input name="userName"
+                        v-model="userName"
+                        type="text"
+                        required></md-input>
+            </md-input-container>
+          </md-card-content>
+        </md-card-area>
+
+        <md-card-actions>
+          <md-button type="submit">제출</md-button>
+          <md-button v-on:click="move('login')">Go login</md-button>
+          <md-button v-on:click="move('signup')">Sign Up</md-button>
+        </md-card-actions>
+      </md-card>
+    </form>
+
+    <!--패스워드 분실 후 재설정 화면-->
+    <form v-if="command === 'edit-password'" @submit.prevent="editPassword">
+      <md-card class="login-box">
+        <img class="logo" src="/static/logo/logo_bright.png">
+
+        <md-card-area>
+          <md-card-header>
+            <div class="md-title"><span style="font-weight: bold">유엔진</span> 솔루션즈</div>
+            <br>
+            <div class="md-subhead">새로운 비밀번호를 입력하십시오.</div>
+          </md-card-header>
+
+          <md-card-content>
+            <md-input-container>
+              <label>Enter your password</label>
+              <md-input v-model="userPassword"
+                        type="password"
+                        required></md-input>
+            </md-input-container>
+          </md-card-content>
+        </md-card-area>
+
+        <md-card-actions>
+          <md-button type="submit">제출</md-button>
+          <md-button v-on:click="move('login')">Go login</md-button>
+          <md-button v-on:click="move('signup')">Sign Up</md-button>
+        </md-card-actions>
+      </md-card>
+    </form>
+
+    <form v-if="command === 'error'">
+      <md-card class="login-box">
+        <img class="logo" src="/static/logo/logo_bright.png">
+
+        <md-card-area>
+          <md-card-header>
+            <div class="md-title"><span style="font-weight: bold">유엔진</span> 솔루션즈</div>
+            <br>
+            <div class="md-subhead">잘못된 요청입니다.</div>
+          </md-card-header>
+        </md-card-area>
       </md-card>
     </form>
   </div>
@@ -49,18 +175,186 @@
     name: 'Login',
     data: function () {
       return {
-        username: null,
-        password: null,
+        command: null,
+        iam: window.iam,
+        userName: null,
+        userPassword: null,
+        name: null,
         authorizeResponse: null,
+        authorizeResponseString: null,
+        oauthClient: null,
+        oauthScopes: [],
         status: null,
-        backendUrl: window.backendUrl
+        token: null,
+        backendUrl: window.backendUrl,
+        browserUrl: window.browserUrl
       };
     },
     mounted() {
-      this.status = this.$route.query['status'];
-      this.authorizeResponse = this.$route.query['authorizeResponse'];
+      this.renderByCommand();
     },
-    methods: {}
+    watch: {
+      '$route'(to, from) {
+        this.renderByCommand();
+      }
+    },
+    methods: {
+      renderByCommand: function () {
+        try {
+          var me = this;
+          this.userName = null;
+          this.userPassword = null;
+          this.command = this.$route.params.command;
+          me.status = this.$route.query['status'];
+
+          var authorizeResponse = this.$route.query['authorizeResponse'];
+          if (authorizeResponse && authorizeResponse.length > 0) {
+            me.authorizeResponse = JSON.parse(authorizeResponse);
+            me.authorizeResponseString = authorizeResponse;
+          }
+          else if (this.$route.query.token && this.$route.query.token.length > 0) {
+            me.token = this.$route.query.token;
+            me.iam.registTokenVerification(me.token)
+              .done(function (regist) {
+                me.authorizeResponse = JSON.parse(regist.authorizeResponse);
+                me.authorizeResponseString = regist.authorizeResponse;
+              })
+          }
+
+          me.oauthClient = me.authorizeResponse['oauthClient'];
+          me.oauthScopes = me.authorizeResponse['oauthScopes'];
+          me.oauthUser = me.authorizeResponse['oauthUser'];
+
+          //verification 인 경우
+          if (this.command == 'sign-up-verification' || this.command == 'forgot-verification') {
+            this.verification();
+          }
+        } catch (e) {
+          me.command = 'error';
+        }
+      },
+      move: function (command) {
+        var me = this;
+        this.$router.push({
+          path: '/auth/' + command,
+          query: {
+            authorizeResponse: JSON.stringify(me.authorizeResponse)
+          }
+        })
+      },
+
+      verification: function () {
+        var me = this;
+        //회원가입 verification 인 경우
+        if (this.command == 'sign-up-verification') {
+          //Compete signup
+          me.iam.signUpAccept(me.token)
+            .done(function (User) {
+              me.$root.$children[0].success('가입 신청이 완료되었습니다. 로그인 해 주세요.');
+              me.$router.push({
+                path: '/auth/login',
+                query: {
+                  authorizeResponse: JSON.stringify(me.authorizeResponse)
+                }
+              })
+            })
+            .fail(function () {
+              me.$root.$children[0].error('회원 가입 신청을 완료할 수 없습니다.');
+              me.$router.push({
+                path: '/auth/login',
+                query: {
+                  authorizeResponse: JSON.stringify(me.authorizeResponse)
+                }
+              })
+            })
+        }
+
+        //forgot 패스워드 verification 인 경우
+        if (this.command == 'forgot-verification') {
+          //Move to password edit route
+          me.$router.push({
+            path: '/auth/edit-password',
+            query: {
+              token: me.$route.query.token
+            }
+          })
+        }
+      },
+      editPassword: function (e) {
+        e.preventDefault();
+        var me = this;
+
+        //Compete repassword
+        me.iam.forgotPasswordAccept(me.token, me.userPassword)
+          .done(function (User) {
+            me.$root.$children[0].success('비밀 번호 변경이 처리되었습니다. 로그인 해 주세요.');
+            me.$router.push({
+              path: '/auth/login',
+              query: {
+                authorizeResponse: JSON.stringify(me.authorizeResponse)
+              }
+            })
+          })
+          .fail(function () {
+            me.$root.$children[0].error('비밀 번호 변경 요청을 완료할 수 없습니다.');
+          })
+      },
+      forgot: function (e) {
+        e.preventDefault();
+        var me = this;
+        me.iam.forgotPassword(me.browserUrl + '/#/auth/forgot-verification', me.userName, JSON.stringify(me.authorizeResponse))
+          .done(function () {
+            //비밀번호 변경 신청 성공 후 알림
+            me.$root.$children[0].success('비밀번호 변경 신청을 완료하였습니다. 이메일을 확인해주세요.');
+            me.$router.push({
+              path: '/auth/login',
+              query: {
+                authorizeResponse: JSON.stringify(me.authorizeResponse)
+              }
+            })
+          })
+          .fail(function (response) {
+            //해당 사용자가 없음
+            if (response.status == 404) {
+              me.$root.$children[0].error('해당 사용자는 존재하지 않습니다.');
+            }
+            //호출을 실패함
+            else {
+              me.$root.$children[0].error('비밀번호 변경 신청을 할 수 없습니다.');
+            }
+          })
+      },
+      signup: function (e) {
+        e.preventDefault();
+        var me = this;
+        me.iam.signUp(me.browserUrl + '/#/auth/sign-up-verification', {
+          userName: me.userName,
+          userPassword: me.userPassword,
+          metaData: {
+            email: me.userName,
+            locale: 'ko_KR',
+            name: me.name
+          }
+        }, JSON.stringify(me.authorizeResponse))
+          .done(function () {
+            //회원 가입 신청 성공 후 알림
+            me.$root.$children[0].success('가입 신청을 완료하였습니다. 이메일을 확인해주세요.');
+            me.$router.push({
+              path: '/auth/login'
+            })
+          })
+          .fail(function (response) {
+            //이미 있는 사용자
+            if (response.status == 409) {
+              me.$root.$children[0].error('이미 존재하는 사용자 입니다.');
+            }
+            //회원 가입 실패 후
+            else {
+              me.$root.$children[0].error('회원 가입 신청을 할 수 없습니다.');
+            }
+          })
+      },
+    }
   }
 </script>
 

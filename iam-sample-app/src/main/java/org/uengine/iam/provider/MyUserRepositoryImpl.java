@@ -40,8 +40,15 @@ public class MyUserRepositoryImpl implements OauthUserRepository {
     @Override
     public OauthUser update(OauthUser oauthUser) {
         JPAUserEntity toUpdate = userRepository.findByUserName(oauthUser.getUserName());
-        toUpdate.setUserPassword(oauthUser.getUserPassword());
+
+        //패스워드가 들어오면 덮어쓰기
+        if(!StringUtils.isEmpty(oauthUser.getUserPassword())){
+            toUpdate.setUserPassword(oauthUser.getUserPassword());
+        }
+
+        //메타데이터는 덮어쓰기
         toUpdate.setMetaData(oauthUser.getMetaData());
+
         return this.toOauthUser(userRepository.save(toUpdate));
     }
 

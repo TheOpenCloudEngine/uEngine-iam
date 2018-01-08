@@ -86,13 +86,13 @@ export default new Router({
       ]
     },
     {
-      path: '/auth/login',
+      path: '/admin/login',
       name: 'admin-login',
       component: AdminLogin,
       beforeEnter: RouterGuard.requireGuest
     },
     {
-      path: '/login',
+      path: '/auth/:command',
       name: 'login',
       component: Login
     }

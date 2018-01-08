@@ -34,7 +34,7 @@ public class OauthRegistServiceImpl implements OauthRegistService {
      * @throws Exception
      */
     @Override
-    public OauthRegist singUp(OauthClient oauthClient, OauthUser oauthUser, String redirect_url) throws Exception {
+    public OauthRegist singUp(OauthClient oauthClient, OauthUser oauthUser, String redirect_url, String authorizeResponse) throws Exception {
         String token = new String(Base64.encode(String.valueOf(System.currentTimeMillis()).getBytes()));
 
         OauthRegist oauthRegist = new OauthRegist();
@@ -43,6 +43,7 @@ public class OauthRegistServiceImpl implements OauthRegistService {
         oauthRegist.setNotification_type(NotificationType.SIGN_UP);
         oauthRegist.setOauthUser(oauthUser);
         oauthRegist.setToken(token);
+        oauthRegist.setAuthorizeResponse(authorizeResponse);
 
         mailService.notificationMail(oauthClient, oauthUser, NotificationType.SIGN_UP, redirect_url, token);
         registRepository.save(oauthRegist);
@@ -51,7 +52,7 @@ public class OauthRegistServiceImpl implements OauthRegistService {
     }
 
     @Override
-    public OauthRegist forgotPassword(OauthClient oauthClient, OauthUser oauthUser, String redirect_url) throws Exception {
+    public OauthRegist forgotPassword(OauthClient oauthClient, OauthUser oauthUser, String redirect_url, String authorizeResponse) throws Exception {
         String token = new String(Base64.encode(String.valueOf(System.currentTimeMillis()).getBytes()));
 
         OauthRegist oauthRegist = new OauthRegist();
@@ -60,6 +61,7 @@ public class OauthRegistServiceImpl implements OauthRegistService {
         oauthRegist.setNotification_type(NotificationType.FORGOT_PASSWORD);
         oauthRegist.setOauthUser(oauthUser);
         oauthRegist.setToken(token);
+        oauthRegist.setAuthorizeResponse(authorizeResponse);
 
         mailService.notificationMail(oauthClient, oauthUser, NotificationType.FORGOT_PASSWORD, redirect_url, token);
         registRepository.save(oauthRegist);
