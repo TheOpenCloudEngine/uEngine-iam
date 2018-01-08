@@ -26,10 +26,13 @@ var IAM = function (host, contextPath) {
   });
 };
 IAM.prototype = {
-  logout: function () {
+  adminLogout: function () {
     localStorage.removeItem('uengine-iam-access-token');
     localStorage.removeItem('uengine-iam-client-key');
     localStorage.removeItem('uengine-iam-client-secret');
+  },
+  logout: function () {
+    localStorage.removeItem('uengine-iam-access-token');
   },
   setDefaultClient: function (key, secret) {
     localStorage.setItem('uengine-iam-client-key', key);

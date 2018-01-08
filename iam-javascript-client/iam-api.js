@@ -26,10 +26,13 @@ var IAM = function (host, contextPath) {
     });
 };
 IAM.prototype = {
-    logout: function () {
+    adminLogout: function () {
         localStorage.removeItem('uengine-iam-access-token');
         localStorage.removeItem('uengine-iam-client-key');
         localStorage.removeItem('uengine-iam-client-secret');
+    },
+    logout: function () {
+        localStorage.removeItem('uengine-iam-access-token');
     },
     setDefaultClient: function (key, secret) {
         localStorage.setItem('uengine-iam-client-key', key);
@@ -194,12 +197,11 @@ IAM.prototype = {
     getUserAvatarUrl: function (userName) {
         return this.baseUrl + '/rest/v1/avatar?userName=' + userName;
     },
-    signUp: function (redirect_url, userData) {
-        var clientKey = localStorage.getItem('uengine-iam-client-key');
+    signUp: function (redirect_url, userData, authorizeResponse) {
         var data = {
-            clientKey: clientKey,
             redirect_url: redirect_url,
-            oauthUser: userData
+            oauthUser: userData,
+            authorizeResponse: authorizeResponse
         };
         var options = {
             type: "POST",
@@ -210,19 +212,8 @@ IAM.prototype = {
         };
         return this.send(options);
     },
-    signUpVerification: function (token) {
-        var clientKey = localStorage.getItem('uengine-iam-client-key');
-        var options = {
-            type: "GET",
-            url: '/rest/v1/user/signup/verification?clientKey=' + clientKey + '&token=' + token,
-            dataType: "json"
-        };
-        return this.send(options);
-    },
     signUpAccept: function (token) {
-        var clientKey = localStorage.getItem('uengine-iam-client-key');
         var data = {
-            clientKey: clientKey,
             token: token
         };
         var options = {
@@ -235,14 +226,13 @@ IAM.prototype = {
         return this.send(options);
     },
 
-    forgotPassword: function (redirect_url, userName) {
-        var clientKey = localStorage.getItem('uengine-iam-client-key');
+    forgotPassword: function (redirect_url, userName, authorizeResponse) {
         var data = {
-            clientKey: clientKey,
             redirect_url: redirect_url,
             oauthUser: {
                 userName: userName
-            }
+            },
+            authorizeResponse: authorizeResponse
         };
         var options = {
             type: "POST",
@@ -253,19 +243,17 @@ IAM.prototype = {
         };
         return this.send(options);
     },
-    forgotPasswordVerification: function (token) {
-        var clientKey = localStorage.getItem('uengine-iam-client-key');
+    registTokenVerification: function (token) {
         var options = {
             type: "GET",
-            url: '/rest/v1/user/forgot/verification?clientKey=' + clientKey + '&token=' + token,
-            dataType: "json"
+            url: '/rest/v1/user/verification?token=' + token,
+            dataType: "json",
+            async: false
         };
         return this.send(options);
     },
     forgotPasswordAccept: function (token, password) {
-        var clientKey = localStorage.getItem('uengine-iam-client-key');
         var data = {
-            clientKey: clientKey,
             token: token,
             password: password
         };

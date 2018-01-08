@@ -57,7 +57,6 @@
         var me = this;
         window.iam.adminLogin(me.username, me.password)
           .done(function (response) {
-            console.log('good!');
             //원래 가고자 했던 화면으로 리다이렉트
             if (me.$route.query.redirect) {
               me.$router.push({

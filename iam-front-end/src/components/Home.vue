@@ -45,13 +45,13 @@
         this.$refs.leftSidenav.toggle();
       },
       logout: function () {
-        window.iam.logout();
+        window.iam.adminLogout();
 
         //Additional access_token storage
         localStorage.removeItem('access_token');
 
         this.$router.push({
-          path: '/auth/login'
+          path: '/admin/login'
         })
       },
       updateActive: function () {
