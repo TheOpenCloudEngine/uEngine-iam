@@ -13,6 +13,12 @@
             <div v-if="status == 'fail'" style="color: red">
               Invalid Account
             </div>
+            <div class="md-subhead">{{oauthClient.name}} 에서 사용자의 다음 권한을 요청합니다.
+            </div>
+            <div v-for="(oauthScope, index) in oauthScopes">
+              {{oauthScope.name}}
+            </div>
+
           </md-card-header>
 
           <md-card-content>
