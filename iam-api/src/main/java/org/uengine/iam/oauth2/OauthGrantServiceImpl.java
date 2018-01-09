@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,7 @@ import org.uengine.iam.oauthscope.OauthScopeService;
 import org.uengine.iam.oauthtoken.*;
 import org.uengine.iam.oauthuser.OauthUser;
 import org.uengine.iam.oauthuser.OauthUserRepository;
-import org.uengine.iam.util.ExceptionUtils;
-import org.uengine.iam.util.JsonFormatterUtils;
-import org.uengine.iam.util.JsonUtils;
-import org.uengine.iam.util.JwtUtils;
+import org.uengine.iam.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -131,8 +129,6 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             String marshal = JsonUtils.marshal(map);
             String prettyPrint = JsonFormatterUtils.prettyPrint(marshal);
 
-            //TODO preTokenInfo 수행
-
             HttpServletResponse response = accessTokenResponse.getResponse();
             response.setStatus(200);
             response.setHeader("Content-Type", "application/json;charset=UTF-8");
@@ -196,8 +192,6 @@ public class OauthGrantServiceImpl implements OauthGrantService {
                 user = objectMapper.convertValue(context.get("user"), OauthUser.class);
             }
             Map claim = (Map) claims.get("claim");
-
-            //TODO preTokenInfo 수행
 
             HttpServletResponse response = accessTokenResponse.getResponse();
             response.setStatus(200);
@@ -314,8 +308,6 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             }
         }
 
-        //TODO preRefreshToken 수행
-
         //어세스 토큰을 만들고 저장한다.
         //기존 리프레쉬 토큰을 어세스 토큰에 같이 저장한다.
         accessTokenResponse.setSaveWithOldRefreshToken(true);
@@ -408,8 +400,6 @@ public class OauthGrantServiceImpl implements OauthGrantService {
 
         accessTokenResponse.setScope(Joiner.on(",").join(oauthCode.getScopes()));
 
-        //TODO preCodeGrant 수행
-
         //어세스 토큰을 만들고 저장한다.
         this.insertAccessToken(accessTokenResponse, "user");
 
@@ -477,8 +467,6 @@ public class OauthGrantServiceImpl implements OauthGrantService {
         }
         accessTokenResponse.setOauthUser(oauthUser);
 
-        //TODO prePasswordGrant 수행
-
         //어세스 토큰을 만들고 저장한다.
         this.insertAccessToken(accessTokenResponse, "user");
 
@@ -535,8 +523,6 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             }
         }
         accessTokenResponse.setOauthScopes(requestScopes);
-
-        //TODO preClientCredentialsGrantGrant 수행
 
         //어세스 토큰을 만들고 저장한다.
         this.insertAccessToken(accessTokenResponse, "client");
@@ -640,8 +626,6 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             }
         }
         accessTokenResponse.setOauthScopes(requestScopes);
-
-        //TODO preJWTGrantGrant 수행
 
         //어세스토큰을 만들고 저장한다.
         OauthAccessToken accessToken = new OauthAccessToken();

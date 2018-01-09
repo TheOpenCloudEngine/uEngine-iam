@@ -1,7 +1,9 @@
 package org.uengine.iam.oauth2;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.uengine.iam.oauthclient.OauthClient;
 import org.uengine.iam.oauthclient.OauthClientService;
@@ -9,6 +11,7 @@ import org.uengine.iam.oauthscope.OauthScope;
 import org.uengine.iam.oauthscope.OauthScopeService;
 import org.uengine.iam.oauthtoken.*;
 import org.uengine.iam.oauthuser.OauthUser;
+import org.uengine.iam.util.ApplicationContextRegistry;
 import org.uengine.iam.util.HttpUtils;
 import org.uengine.iam.util.JsonUtils;
 
@@ -18,7 +21,21 @@ import java.io.IOException;
 import java.util.*;
 
 @Service
-public class OauthServiceImpl implements OauthService {
+public class OauthServiceImpl implements OauthService, InitializingBean {
+
+    private OauthFilter oauthFilter = null;
+
+    @Autowired
+    ApplicationContext applicationContext;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        try {
+            this.oauthFilter = applicationContext.getBean(OauthFilter.class);
+        } catch (Exception ex) {
+            this.oauthFilter = null;
+        }
+    }
 
     @Autowired
     private OauthClientService clientService;
@@ -178,82 +195,105 @@ public class OauthServiceImpl implements OauthService {
         }
         Map params = new HashMap();
         try {
-            switch (authorizeResponse.getResponseType()) {
-                //코드일경우
-                //1. 코드를 만들고 저장.
-                //2. 코드와 스테이트를 리턴
-                case "code":
-                    OauthCode oauthCode = new OauthCode();
-                    oauthCode.setClientKey(authorizeResponse.getOauthClient().getClientKey());
-                    oauthCode.setUserName(authorizeResponse.getOauthUser().getUserName());
-                    oauthCode.setCode(UUID.randomUUID().toString());
-                    oauthCode.setScopes(Arrays.asList(authorizeResponse.getScope().split(",")));
-                    codeRepository.save(oauthCode);
+            //preAuthorize 수행
+            boolean perform = true;
+            if (oauthFilter != null) {
+                perform = oauthFilter.preAuthorize(authorizeResponse);
+            }
+            if (!perform) {
+                params.put("error", OauthConstant.SERVER_ERROR);
+                params.put("error_description", "Server can not process authorize");
+                params.put("state", authorizeResponse.getState());
+            } else {
+                switch (authorizeResponse.getResponseType()) {
+                    //코드일경우
+                    //1. 코드를 만들고 저장.
+                    //2. 코드와 스테이트를 리턴
+                    case "code":
 
-                    params.put("code", oauthCode.getCode());
-                    params.put("state", authorizeResponse.getState());
-                    break;
+                        OauthCode oauthCode = new OauthCode();
+                        oauthCode.setClientKey(authorizeResponse.getOauthClient().getClientKey());
+                        oauthCode.setUserName(authorizeResponse.getOauthUser().getUserName());
+                        oauthCode.setCode(UUID.randomUUID().toString());
+                        oauthCode.setScopes(Arrays.asList(authorizeResponse.getScope().split(",")));
+                        codeRepository.save(oauthCode);
 
-                //토큰일경우
-                //어세스토큰을 만든다.
-                //리스레쉬토큰이 허용될 경우 리프레쉬 토큰도 만든다.
-                //access_token,token_type,expires_in,scope,state 리턴
-                //토큰 타입은 bearer 이다.
-                //토큰 타입이 JWT 일 경우 jwt 토큰 제너레이션
-                case "token":
+                        if (oauthFilter != null) {
+                            oauthFilter.postAuthorize(authorizeResponse);
+                        }
 
-                    OauthAccessToken accessToken = new OauthAccessToken();
+                        params.put("code", oauthCode.getCode());
+                        params.put("state", authorizeResponse.getState());
+                        break;
 
-                    accessToken.setType("user");
-                    accessToken.setScopes(Arrays.asList(authorizeResponse.getScope().split(",")));
-                    accessToken.setToken(UUID.randomUUID().toString());
-                    accessToken.setUserName(authorizeResponse.getOauthUser().getUserName());
-                    accessToken.setClientKey(authorizeResponse.getOauthClient().getClientKey());
+                    //토큰일경우
+                    //어세스토큰을 만든다.
+                    //리스레쉬토큰이 허용될 경우 리프레쉬 토큰도 만든다.
+                    //access_token,token_type,expires_in,scope,state 리턴
+                    //토큰 타입은 bearer 이다.
+                    //토큰 타입이 JWT 일 경우 jwt 토큰 제너레이션
+                    case "token":
 
-                    if (authorizeResponse.getOauthClient().getRefreshTokenValidity()) {
-                        accessToken.setRefreshToken(UUID.randomUUID().toString());
-                    }
+                        OauthAccessToken accessToken = new OauthAccessToken();
 
-                    if ("JWT".equals(authorizeResponse.getTokenType())) {
-                        String jwtToken = tokenService.generateJWTToken(
-                                authorizeResponse.getOauthUser(),
-                                authorizeResponse.getOauthClient(),
-                                accessToken,
-                                authorizeResponse.getClaim(),
-                                authorizeResponse.getOauthClient().getAccessTokenLifetime(),
-                                "user");
-                        accessToken.setToken(jwtToken);
+                        accessToken.setType("user");
+                        accessToken.setScopes(Arrays.asList(authorizeResponse.getScope().split(",")));
+                        accessToken.setToken(UUID.randomUUID().toString());
+                        accessToken.setUserName(authorizeResponse.getOauthUser().getUserName());
+                        accessToken.setClientKey(authorizeResponse.getOauthClient().getClientKey());
 
-                        params.put("token_type", "JWT");
-                        params.put("expires_in", authorizeResponse.getOauthClient().getAccessTokenLifetime());
-                    } else {
-                        params.put("token_type", "Bearer");
-                        params.put("expires_in", authorizeResponse.getOauthClient().getAccessTokenLifetime());
-                    }
+                        if (authorizeResponse.getOauthClient().getRefreshTokenValidity()) {
+                            accessToken.setRefreshToken(UUID.randomUUID().toString());
+                        }
 
-                    OauthClient oauthClient = authorizeResponse.getOauthClient();
-                    OauthUser oauthUser = authorizeResponse.getOauthUser();
-                    String scope = authorizeResponse.getScope();
+                        if ("JWT".equals(authorizeResponse.getTokenType())) {
+                            String jwtToken = tokenService.generateJWTToken(
+                                    authorizeResponse.getOauthUser(),
+                                    authorizeResponse.getOauthClient(),
+                                    accessToken,
+                                    authorizeResponse.getClaim(),
+                                    authorizeResponse.getOauthClient().getAccessTokenLifetime(),
+                                    "user");
+                            accessToken.setToken(jwtToken);
 
-                    //TODO preAuthorize 수행
+                            params.put("token_type", "JWT");
+                            params.put("expires_in", authorizeResponse.getOauthClient().getAccessTokenLifetime());
+                        } else {
+                            params.put("token_type", "Bearer");
+                            params.put("expires_in", authorizeResponse.getOauthClient().getAccessTokenLifetime());
+                        }
 
-                    tokenRepository.save(accessToken);
-                    params.put("access_token", accessToken.getToken());
-                    params.put("scope", authorizeResponse.getScope());
-                    params.put("state", authorizeResponse.getState());
-                    break;
+                        OauthClient oauthClient = authorizeResponse.getOauthClient();
+                        OauthUser oauthUser = authorizeResponse.getOauthUser();
+                        String scope = authorizeResponse.getScope();
 
-                default:
-                    params.put("error", OauthConstant.SERVER_ERROR);
-                    params.put("error_description", "Server can not process authorize");
-                    params.put("state", authorizeResponse.getState());
-                    break;
+                        tokenRepository.save(accessToken);
+                        params.put("access_token", accessToken.getToken());
+                        params.put("scope", authorizeResponse.getScope());
+                        params.put("state", authorizeResponse.getState());
+                        break;
+
+                    default:
+                        params.put("error", OauthConstant.SERVER_ERROR);
+                        params.put("error_description", "Server can not process authorize");
+                        params.put("state", authorizeResponse.getState());
+                        break;
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             params.put("error", OauthConstant.SERVER_ERROR);
             params.put("error_description", "Server can not process authorize");
             params.put("state", authorizeResponse.getState());
+        }
+
+        //Post Authorize
+        try {
+            if (oauthFilter != null) {
+                oauthFilter.postAuthorize(authorizeResponse);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         response.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -298,37 +338,57 @@ public class OauthServiceImpl implements OauthService {
 
         //gratn_type 별로 프로세스를 수행한다.
         try {
-            switch (accessTokenResponse.getGrant_type()) {
-                case "authorization_code":
-                    grantService.processCodeGrant(accessTokenResponse);
-                    break;
+            //preTokenIssue 수행
+            boolean perform = true;
+            if (oauthFilter != null) {
+                perform = oauthFilter.preTokenIssue(accessTokenResponse);
+            }
+            if (!perform) {
+                accessTokenResponse.setError(OauthConstant.SERVER_ERROR);
+                accessTokenResponse.setError_description("Server can not process issue token by filter");
+                grantService.responseToken(accessTokenResponse);
+            } else {
+                switch (accessTokenResponse.getGrant_type()) {
+                    case "authorization_code":
+                        grantService.processCodeGrant(accessTokenResponse);
+                        break;
 
-                case "password":
-                    grantService.processPasswordGrant(accessTokenResponse);
-                    break;
+                    case "password":
+                        grantService.processPasswordGrant(accessTokenResponse);
+                        break;
 
-                case "client_credentials":
-                    grantService.processClientCredentialsGrant(accessTokenResponse);
-                    break;
+                    case "client_credentials":
+                        grantService.processClientCredentialsGrant(accessTokenResponse);
+                        break;
 
-                case "urn:ietf:params:oauth:grant-type:jwt-bearer":
-                    grantService.processJWTGrant(accessTokenResponse);
-                    break;
+                    case "urn:ietf:params:oauth:grant-type:jwt-bearer":
+                        grantService.processJWTGrant(accessTokenResponse);
+                        break;
 
-                case "refresh_token":
-                    grantService.processRefreshToken(accessTokenResponse);
-                    break;
+                    case "refresh_token":
+                        grantService.processRefreshToken(accessTokenResponse);
+                        break;
 
-                default:
-                    accessTokenResponse.setError(OauthConstant.INVALID_REQUEST);
-                    accessTokenResponse.setError_description("grant_type must be one of authorization_code,password,client_credentials,refresh_token,urn:ietf:params:oauth:grant-type:jwt-bearer");
-                    grantService.responseToken(accessTokenResponse);
+                    default:
+                        accessTokenResponse.setError(OauthConstant.INVALID_REQUEST);
+                        accessTokenResponse.setError_description("grant_type must be one of authorization_code,password,client_credentials,refresh_token,urn:ietf:params:oauth:grant-type:jwt-bearer");
+                        grantService.responseToken(accessTokenResponse);
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             accessTokenResponse.setError(OauthConstant.SERVER_ERROR);
             accessTokenResponse.setError_description("server error during access token processing");
             grantService.responseToken(accessTokenResponse);
+        }
+
+        //Post postTokenIssue
+        try {
+            if (oauthFilter != null) {
+                oauthFilter.postTokenIssue(accessTokenResponse);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
