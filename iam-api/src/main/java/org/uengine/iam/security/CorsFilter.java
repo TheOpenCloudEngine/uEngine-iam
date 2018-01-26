@@ -41,6 +41,11 @@ public class CorsFilter implements Filter {
             this.addCors((HttpServletResponse) res);
             chain.doFilter(req, res);
         }
+        //user 통과
+        else if (request.getRequestURI().startsWith("/rest/v1/user")) {
+            this.addCors((HttpServletResponse) res);
+            chain.doFilter(req, res);
+        }
         //rest api 는 검증
         else if (request.getRequestURI().startsWith("/rest/v1")) {
             boolean enable = false;
