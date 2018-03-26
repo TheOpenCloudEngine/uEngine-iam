@@ -75,7 +75,7 @@ clients:
     user-scope-check: true
 
     # 토큰에 노출되면 안되는 유저 메타데이터 필드 목록 (콤마 세퍼레이션)
-    secure-metadata-fields: gitlab-token
+    secure-metadata-fields: gitlab-token,name
 
     # client-key,client-secret 헤더로 Rest api 를 호출할 수 있는 권한.
     # 회원 가입,사용자 정보 수정등의 rest api 를 호출할 수 있다.

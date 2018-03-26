@@ -89,6 +89,17 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
             //remove unused fields.
             userMap.remove("userPassword");
+
+            //remove secure metadata field.
+            String[] secureMetadataFields = oauthClient.getSecureMetadataFields();
+            Map metaData = (Map) userMap.get("metaData");
+            if (secureMetadataFields != null) {
+                List<String> list = Arrays.asList(oauthClient.getSecureMetadataFields());
+                for (String secureField : list) {
+                    metaData.remove(secureField);
+                }
+            }
+
             context.put("user", userMap);
         }
 
