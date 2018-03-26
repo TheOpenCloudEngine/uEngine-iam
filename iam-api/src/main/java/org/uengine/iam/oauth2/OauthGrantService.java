@@ -15,5 +15,4 @@ public interface OauthGrantService {
     void processTokenInfo(AccessTokenResponse accessTokenResponse) throws Exception;
 
     void processRefreshToken(AccessTokenResponse accessTokenResponse) throws Exception;
-
 }

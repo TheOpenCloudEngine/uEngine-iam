@@ -20,6 +20,7 @@ import org.uengine.iam.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
 
 @Service
@@ -71,6 +72,9 @@ public class OauthGrantServiceImpl implements OauthGrantService {
 
     @Autowired
     private OauthCodeRepository codeRepository;
+
+    @Autowired
+    private OauthService oauthService;
 
     @Override
     public void processTokenInfo(AccessTokenResponse accessTokenResponse) throws Exception {
@@ -291,6 +295,8 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             type = "user";
             OauthUser oauthUser = userRepository.findByUserName(accessToken.getUserName());
             accessTokenResponse.setOauthUser(oauthUser);
+
+            //TODO 리프레쉬 토큰에도 validateUserScope?
         } else {
             type = "client";
         }
@@ -448,7 +454,7 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             String scopeName = requestScopesNames.get(i);
             if (!enabelScopesNames.contains(scopeName)) {
                 accessTokenResponse.setError(OauthConstant.INVALID_SCOPE);
-                accessTokenResponse.setError_description("Client dost not have requested scope");
+                accessTokenResponse.setError_description(String.format("Client dost not have requested scope, %s", scopeName));
                 this.responseToken(accessTokenResponse);
                 return;
             } else {
@@ -466,6 +472,20 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             return;
         }
         accessTokenResponse.setOauthUser(oauthUser);
+
+        //유저 스코프를 검증한다.
+        List<OauthScope> missingScopes = oauthService.validateUserScopes(accessTokenResponse.getOauthClient(), oauthUser, accessTokenResponse.getOauthScopes());
+        if (missingScopes != null) {
+            List<String> missingScopeName = new ArrayList<>();
+            for (OauthScope missingScope : missingScopes) {
+                missingScopeName.add(missingScope.getName());
+            }
+
+            accessTokenResponse.setError(OauthConstant.INVALID_SCOPE);
+            accessTokenResponse.setError_description(String.format("User does not have requested scope, %s", Joiner.on(",").join(missingScopeName)));
+            this.responseToken(accessTokenResponse);
+            return;
+        }
 
         //어세스 토큰을 만들고 저장한다.
         this.insertAccessToken(accessTokenResponse, "user");
@@ -515,7 +535,7 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             String scopeName = requestScopesNames.get(i);
             if (!enabelScopesNames.contains(scopeName)) {
                 accessTokenResponse.setError(OauthConstant.INVALID_SCOPE);
-                accessTokenResponse.setError_description("Client dost not have requested scope");
+                accessTokenResponse.setError_description(String.format("Client dost not have requested scope, %s", scopeName));
                 this.responseToken(accessTokenResponse);
                 return;
             } else {
@@ -618,7 +638,7 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             String scopeName = requestScopesNames.get(i);
             if (!enabelScopesNames.contains(scopeName)) {
                 accessTokenResponse.setError(OauthConstant.INVALID_SCOPE);
-                accessTokenResponse.setError_description("Client dost not have requested scope");
+                accessTokenResponse.setError_description(String.format("Client dost not have requested scope, %s", scopeName));
                 this.responseToken(accessTokenResponse);
                 return;
             } else {

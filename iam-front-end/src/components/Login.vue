@@ -19,6 +19,15 @@
               {{oauthScope.name}}
             </div>
 
+            <div v-if="status == 'fail' && missingScopes" style="color: red">
+              <br>
+              <div class="md-subhead">사용자에게 다음의 권한이 없습니다.
+              </div>
+              <div v-for="(missingScope, index) in missingScopes">
+                {{missingScope.name}}
+              </div>
+            </div>
+
           </md-card-header>
 
           <md-card-content>
@@ -191,6 +200,7 @@
         oauthClient: null,
         oauthScopes: [],
         status: null,
+        missingScopes: null,
         token: null,
         backendUrl: window.backendUrl,
         browserUrl: window.browserUrl
@@ -212,6 +222,11 @@
           this.userPassword = null;
           this.command = this.$route.params.command;
           me.status = this.$route.query['status'];
+
+          var missingScopes = this.$route.query['missingScopes'];
+          if (missingScopes && missingScopes.length > 0) {
+            me.missingScopes = JSON.parse(missingScopes);
+          }
 
           var authorizeResponse = this.$route.query['authorizeResponse'];
           if (authorizeResponse && authorizeResponse.length > 0) {

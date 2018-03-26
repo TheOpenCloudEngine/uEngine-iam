@@ -56,6 +56,44 @@ public class OauthServiceImpl implements OauthService, InitializingBean {
     private OauthTokenRepository tokenRepository;
 
     /**
+     * 요청된 스코프에 유저 스코프가 있는지 체크. null 리턴시 정상. 통과못할시 누락된 스코프 목록 출력.
+     *
+     * @param oauthClient
+     * @param oauthUser
+     * @param requestedScopes
+     * @return
+     */
+    @Override
+    public List<OauthScope> validateUserScopes(OauthClient oauthClient, OauthUser oauthUser, List<OauthScope> requestedScopes) {
+        boolean hasScopse = true;
+        List<OauthScope> missingScopes = new ArrayList<OauthScope>();
+
+        //유저 스코프 체크할 경우
+        if (oauthClient.getUserScopeCheck()) {
+            if (oauthUser.getMetaData().containsKey("scopes")) {
+                try {
+                    List<String> userScopes = (List<String>) oauthUser.getMetaData().get("scopes");
+                    for (OauthScope oauthScope : requestedScopes) {
+                        if (!userScopes.contains(oauthScope.getName())) {
+                            missingScopes.add(oauthScope);
+                            hasScopse = false;
+                        }
+                    }
+                } catch (Exception ex) {
+                    hasScopse = false;
+                }
+            } else {
+                hasScopse = false;
+            }
+        }
+        if (hasScopse) {
+            return null;
+        } else {
+            return missingScopes;
+        }
+    }
+
+    /**
      * Authorization Code,Implicit Grant 의 최초 요청을 검증하는 단계.
      *
      * @param request
@@ -169,7 +207,7 @@ public class OauthServiceImpl implements OauthService, InitializingBean {
             String scopeName = requestScopesNames.get(i);
             if (!enableScopesNames.contains(scopeName)) {
                 authorizeResponse.setError(OauthConstant.INVALID_SCOPE);
-                authorizeResponse.setError_description("Client dost not have requested scope");
+                authorizeResponse.setError_description(String.format("Client dost not have requested scope, %s", scopeName));
                 return authorizeResponse;
             } else {
                 requestScopes.add(scopeService.selectByName(scopeName));

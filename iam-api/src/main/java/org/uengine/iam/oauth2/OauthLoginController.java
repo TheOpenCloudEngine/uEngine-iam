@@ -2,12 +2,15 @@ package org.uengine.iam.oauth2;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Joiner;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.uengine.iam.oauthclient.OauthClient;
+import org.uengine.iam.oauthscope.OauthScope;
 import org.uengine.iam.oauthuser.OauthUser;
 import org.uengine.iam.oauthuser.OauthUserRepository;
 import org.uengine.iam.util.HttpUtils;
@@ -19,7 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -59,9 +64,21 @@ public class OauthLoginController {
                 String uiHost = environment.getProperty("ui-host");
                 String encodeResult = URLEncoder.encode(JsonUtils.marshal(authorizeResponse), "UTF-8");
                 response.sendRedirect(uiHost + "#/auth/login?authorizeResponse=" + encodeResult + "&status=fail");
-            } else {
-                authorizeResponse.setOauthUser(oauthUser);
-                oauthService.processAuthorize(authorizeResponse, response);
+            }
+
+            //로그인 창을 통해서는 ok. 패스워드 그런트에도 이 로직을 추가할 것.
+            else {
+                List<OauthScope> missingScopes = oauthService.validateUserScopes(authorizeResponse.getOauthClient(), oauthUser, authorizeResponse.getOauthScopes());
+                if (missingScopes == null) {
+                    authorizeResponse.setOauthUser(oauthUser);
+                    oauthService.processAuthorize(authorizeResponse, response);
+                } else {
+                    String uiHost = environment.getProperty("ui-host");
+                    String encodeResult = URLEncoder.encode(JsonUtils.marshal(authorizeResponse), "UTF-8");
+                    String missingScopesResult = URLEncoder.encode(JsonUtils.marshal(missingScopes), "UTF-8");
+                    response.sendRedirect(uiHost + "#/auth/login?authorizeResponse=" + encodeResult +
+                            "&status=fail&missingScopes=" + missingScopesResult);
+                }
             }
         } catch (Exception ex) {
             String uiHost = environment.getProperty("ui-host");
