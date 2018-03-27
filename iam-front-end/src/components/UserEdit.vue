@@ -101,7 +101,6 @@
       'checkedScopes': {
         handler: function () {
           var me = this;
-          console.log(me.checkedScopes);
           $.each(me.checkedScopes, function (i, scope) {
             //선택 되었을 경우 추가
             if (scope.checked) {
@@ -117,7 +116,6 @@
               }
             }
           });
-          console.log(me.user.metaData.scopes);
           this.modelToEditor();
           //this.createScopeMap();
         },

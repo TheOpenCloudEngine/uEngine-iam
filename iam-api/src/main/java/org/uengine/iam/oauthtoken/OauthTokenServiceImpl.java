@@ -126,9 +126,6 @@ public class OauthTokenServiceImpl implements OauthTokenService {
                 metaData = JwtUtils.encodeMetadata(metaData, secureMetadataFields, metadataEncoderSecret1, metadataEncoderSecret2);
                 userMap.put("metaData", metaData);
             }
-
-            JwtUtils.decodeMetadata(JsonUtils.convertClassToMap(metaData), secureMetadataFields, metadataEncoderSecret1, metadataEncoderSecret2);
-
             context.put("user", userMap);
         }
 
