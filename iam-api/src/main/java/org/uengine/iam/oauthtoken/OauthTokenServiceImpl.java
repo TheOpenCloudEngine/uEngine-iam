@@ -110,7 +110,6 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         Map context = new HashMap();
         context.put("clientKey", oauthClient.getClientKey());
         context.put("type", accessToken.getType());
-        context.put("scopes", accessToken.getScopes());
         context.put("refreshToken", accessToken.getRefreshToken());
 
         if (type.equals("user")) {
@@ -120,13 +119,27 @@ public class OauthTokenServiceImpl implements OauthTokenService {
             //remove unused fields.
             userMap.remove("userPassword");
 
-            //remove secure metadata field.
+            //encode secure metadata field.
             Map metaData = (Map) userMap.get("metaData");
             if (secureMetadataFields != null) {
                 metaData = JwtUtils.encodeMetadata(metaData, secureMetadataFields, metadataEncoderSecret1, metadataEncoderSecret2);
                 userMap.put("metaData", metaData);
             }
             context.put("user", userMap);
+
+            //Put scopes only user has.
+            List<String> scopes = accessToken.getScopes();
+            List<String> userScopes = (List<String>) oauthUser.getMetaData().get("scopes");
+            List<String> finalScopes = new ArrayList<>();
+            for (String scope : scopes) {
+                if(userScopes.contains(scope)){
+                    finalScopes.add(scope);
+                }
+            }
+            context.put("scopes", finalScopes);
+        } else {
+            //Put all scopes
+            context.put("scopes", accessToken.getScopes());
         }
 
         //클라이언트의 콘텍스트 필수 항목만 context 에 집어넣는다.

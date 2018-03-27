@@ -80,7 +80,7 @@ clients:
     clientSecret: my-client-secret
 
     # 토큰 발급시 요청할 수 있는 스코프 목록 (콤마 세퍼레이션)
-    enable-scopes: cloud-server
+    enable-scopes: cloud-server,bpm
 
     # 유저 스코프 체크. 유저 metadata 의 scopes 를 검사한다.
     # true: 요청받은 스코프를 모두 가지고 있어야 한다.
