@@ -13,6 +13,7 @@ var IAM = function (host, contextPath) {
         this.baseUrl = this.baseUrl + this.contextPath;
     }
     this.user = undefined;
+    this.scopes = undefined;
 
     $(window).ajaxSend(function (e, xhr, options) {
         var token = localStorage.getItem('uengine-iam-access-token');
@@ -33,6 +34,8 @@ IAM.prototype = {
     },
     logout: function () {
         localStorage.removeItem('uengine-iam-access-token');
+        this.user = undefined;
+        this.scopes = undefined;
     },
     setDefaultClient: function (key, secret) {
         localStorage.setItem('uengine-iam-client-key', key);
@@ -62,6 +65,7 @@ IAM.prototype = {
         return this.send(options);
     },
     passwordCredentialsLogin: function (username, password, scope, token_type, claim) {
+        var me = this;
         var data = {
             username: username,
             password: password,
@@ -88,10 +92,14 @@ IAM.prototype = {
                 if (response['access_token']) {
                     var token = response['access_token'];
                     localStorage.setItem("uengine-iam-access-token", token);
+                    me.user = undefined;
+                    me.scopes = undefined;
                     return response;
                 } else {
                     console.log('login failed');
                     localStorage.removeItem("uengine-iam-access-token");
+                    me.user = undefined;
+                    me.scopes = undefined;
                     return response;
                 }
             }
@@ -99,12 +107,24 @@ IAM.prototype = {
         return this.send(options);
     },
     validateToken: function (token) {
+        var me = this;
         token = token ? token : localStorage.getItem("uengine-iam-access-token");
         var options = {
             type: "GET",
             url: '/oauth/token_info?access_token=' + token,
             dataType: "json",
-            async: true
+            async: true,
+            resolve: function (response) {
+                if (response['context']) {
+                    me.user = response['context'].user;
+                    me.scopes = response['context'].scopes;
+                    return response;
+                } else {
+                    me.user = undefined;
+                    me.scopes = undefined;
+                    return response;
+                }
+            }
         };
         return this.send(options);
     },
