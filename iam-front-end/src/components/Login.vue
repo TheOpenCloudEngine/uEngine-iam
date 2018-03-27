@@ -3,12 +3,10 @@
 
     <form v-if="command === 'login'" method="post" :action="backendUrl + '/oauth/login'">
       <md-card class="login-box">
-        <img class="logo" src="/static/logo/logo_bright.png">
+        <img class="logo" src="/static/logo/main.png">
 
         <md-card-area>
           <md-card-header>
-            <div class="md-title"><span style="font-weight: bold">유엔진</span> 솔루션즈</div>
-            <br>
             <div class="md-subhead">Log in to your account</div>
             <div v-if="status == 'fail'" style="color: red">
               Invalid Account
@@ -70,12 +68,10 @@
 
     <form v-if="command === 'signup'" @submit.prevent="signup">
       <md-card class="login-box">
-        <img class="logo" src="/static/logo/logo_bright.png">
+        <img class="logo" src="/static/logo/main.png">
 
         <md-card-area>
           <md-card-header>
-            <div class="md-title"><span style="font-weight: bold">유엔진</span> 솔루션즈</div>
-            <br>
             <div class="md-subhead">회원 가입</div>
           </md-card-header>
 
@@ -116,12 +112,10 @@
 
     <form v-if="command === 'forgot'" @submit.prevent="forgot">
       <md-card class="login-box">
-        <img class="logo" src="/static/logo/logo_bright.png">
+        <img class="logo" src="/static/logo/main.png">
 
         <md-card-area>
           <md-card-header>
-            <div class="md-title"><span style="font-weight: bold">유엔진</span> 솔루션즈</div>
-            <br>
             <div class="md-subhead">비밀번호 분실</div>
             <div class="md-subhead">회원가입시 등록한 이메일을 입력하세요</div>
           </md-card-header>
@@ -148,12 +142,10 @@
     <!--패스워드 분실 후 재설정 화면-->
     <form v-if="command === 'edit-password'" @submit.prevent="editPassword">
       <md-card class="login-box">
-        <img class="logo" src="/static/logo/logo_bright.png">
+        <img class="logo" src="/static/logo/main.png">
 
         <md-card-area>
           <md-card-header>
-            <div class="md-title"><span style="font-weight: bold">유엔진</span> 솔루션즈</div>
-            <br>
             <div class="md-subhead">새로운 비밀번호를 입력하십시오.</div>
           </md-card-header>
 
@@ -188,6 +180,14 @@
         </md-card-area>
       </md-card>
     </form>
+
+    <div align="center">
+      <img src="http://iam.pas-mini.io/static/logo/logo_bright.png" height="50" style="
+        height: 20px;
+        margin-top: 20px;
+        margin-left: auto;
+        margin-right: auto;">
+    </div>
   </div>
 </template>
 
@@ -405,7 +405,7 @@
     max-width: 350px;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 200px;
+    margin-top: 180px;
     text-align: center;
     overflow: visible;
 
@@ -418,7 +418,9 @@
       margin-top: -50px;
       margin-left: auto;
       margin-right: auto;
-      width: 200px;
+      width: 100%;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
     }
   }
 

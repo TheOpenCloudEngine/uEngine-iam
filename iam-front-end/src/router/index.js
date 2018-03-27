@@ -17,6 +17,12 @@ Vue.component('token-table', TokenTable);
 import Dashboard from '../components/Dashboard'
 Vue.component('dashboard', Dashboard);
 
+import System from '../components/System'
+Vue.component('system', System);
+
+import Clients from '../components/Clients'
+Vue.component('clients', Clients);
+
 import UserList from '../components/UserList'
 Vue.component('user-list', UserList);
 
@@ -81,10 +87,19 @@ export default new Router({
           path: 'dashboard',
           name: 'dashboard',
           component: Dashboard,
-          beforeEnter: RouterGuard.requireUser,
-          meta: {
-            breadcrumb: '대시보드'
-          },
+          beforeEnter: RouterGuard.requireUser
+        },
+        {
+          path: 'system',
+          name: 'system',
+          component: System,
+          beforeEnter: RouterGuard.requireUser
+        },
+        {
+          path: 'clients',
+          name: 'clients',
+          component: Clients,
+          beforeEnter: RouterGuard.requireUser
         }
       ]
     },
