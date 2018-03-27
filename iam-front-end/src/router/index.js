@@ -5,6 +5,9 @@ import Login from '../components/Login'
 import ServiceLocator from '../components/ServiceLocator'
 import Home from '../components/Home'
 
+import Confirm from '../components/Confirm'
+Vue.component('confirm', Confirm);
+
 import KeyValueTable from '../components/KeyValueTable'
 Vue.component('key-value-table', KeyValueTable);
 

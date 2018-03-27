@@ -221,17 +221,25 @@
       },
       remove: function () {
         var me = this;
-        window.iam.deleteUser(me.userName)
-          .done(function () {
-            me.$root.$children[0].error('사용자를 삭제하였습니다.');
-            me.close();
-          })
-          .fail(function () {
-            me.$root.$children[0].error('사용자를 삭제할 수 없습니다.');
-          })
-          .always(function () {
-            me.edited();
-          })
+        me.$root.$children[0].confirm(
+          {
+            contentHtml: '사용자를 삭제합니다.',
+            okText: '삭제하기',
+            cancelText: '취소',
+            callback: function () {
+              window.iam.deleteUser(me.userName)
+                .done(function () {
+                  me.$root.$children[0].error('사용자를 삭제하였습니다.');
+                  me.close();
+                })
+                .fail(function () {
+                  me.$root.$children[0].error('사용자를 삭제할 수 없습니다.');
+                })
+                .always(function () {
+                  me.edited();
+                })
+            }
+          });
       },
       edited: function () {
         this.$emit('edited', true);
