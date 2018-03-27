@@ -198,9 +198,9 @@ public class JwtUtils {
                 if (read != null) {
                     String targetValue = null;
                     try {
-                        targetValue = JsonUtils.marshal(read);
+                        targetValue = (String) read;
                     } catch (Exception ex) {
-                        targetValue = read + "";
+                        targetValue = JsonUtils.marshal(read);
                     }
                     String encrypt = Encrypter.encrypt(secretKey1, secretKey2, targetValue);
 
