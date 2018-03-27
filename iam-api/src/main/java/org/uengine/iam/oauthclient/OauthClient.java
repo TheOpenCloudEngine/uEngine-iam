@@ -23,8 +23,7 @@ public class OauthClient {
     private Long refreshTokenLifetime;
     private Long accessTokenLifetime;
     private String[] notification;
-    private boolean userScopeCheck;
-    private String[] secureMetadataFields;
+    private boolean userScopeCheckAll;
 
     public String getName() {
         return name;
@@ -162,19 +161,11 @@ public class OauthClient {
         this.notification = notification;
     }
 
-    public boolean getUserScopeCheck() {
-        return userScopeCheck;
+    public boolean getUserScopeCheckAll() {
+        return userScopeCheckAll;
     }
 
-    public void setUserScopeCheck(boolean userScopeCheck) {
-        this.userScopeCheck = userScopeCheck;
-    }
-
-    public String[] getSecureMetadataFields() {
-        return secureMetadataFields;
-    }
-
-    public void setSecureMetadataFields(String[] secureMetadataFields) {
-        this.secureMetadataFields = secureMetadataFields;
+    public void setUserScopeCheckAll(boolean userScopeCheckAll) {
+        this.userScopeCheckAll = userScopeCheckAll;
     }
 }

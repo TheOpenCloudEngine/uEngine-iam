@@ -482,7 +482,13 @@ public class OauthGrantServiceImpl implements OauthGrantService {
             }
 
             accessTokenResponse.setError(OauthConstant.INVALID_SCOPE);
-            accessTokenResponse.setError_description(String.format("User does not have requested scope, %s", Joiner.on(",").join(missingScopeName)));
+            if (accessTokenResponse.getOauthClient().getUserScopeCheckAll()) {
+                accessTokenResponse.setError_description(String.format(
+                        "User does not have requested scope, %s", Joiner.on(",").join(missingScopeName)));
+            } else {
+                accessTokenResponse.setError_description(String.format(
+                        "User must have at least one of the following scopes, %s", Joiner.on(",").join(missingScopeName)));
+            }
             this.responseToken(accessTokenResponse);
             return;
         }

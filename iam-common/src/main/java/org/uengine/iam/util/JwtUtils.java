@@ -17,6 +17,13 @@
  */
 package org.uengine.iam.util;
 
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.internal.filter.ValueNode;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
@@ -30,12 +37,16 @@ import org.apache.commons.io.IOUtils;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Jwt Utility.
@@ -44,6 +55,12 @@ import java.util.Date;
  * @since 0.1
  */
 public class JwtUtils {
+
+    private static final Configuration configuration = Configuration.builder()
+            .jsonProvider(new JacksonJsonNodeJsonProvider())
+            .mappingProvider(new JacksonMappingProvider())
+            .build();
+
 
     public static JWTClaimsSet parseToken(String jwtToken) throws Exception {
         JWSObject jwsObject = JWSObject.parse(jwtToken);
@@ -169,5 +186,61 @@ public class JwtUtils {
         FileInputStream fisTargetFile = new FileInputStream(file);
         String sharedSecret = IOUtils.toString(fisTargetFile, "UTF-8");
         return sharedSecret;
+    }
+
+    public static Map encodeMetadata(Map metaData, String[] jsonPaths, String secretKey1, String secretKey2) throws Exception {
+
+        List<String> list = Arrays.asList(jsonPaths);
+        for (String jsonPath : list) {
+            Object read = null;
+            try {
+                read = JsonPath.read(metaData, jsonPath);
+                if (read != null) {
+                    String targetValue = null;
+                    try {
+                        targetValue = JsonUtils.marshal(read);
+                    } catch (Exception ex) {
+                        targetValue = read + "";
+                    }
+                    String encrypt = Encrypter.encrypt(secretKey1, secretKey2, targetValue);
+
+                    String marshal = JsonUtils.marshal(metaData);
+                    JsonNode updatedJson = JsonPath.using(configuration).parse(marshal).set(jsonPath, encrypt).json();
+                    metaData = JsonUtils.convertClassToMap(updatedJson);
+                }
+            } catch (Exception ex) {
+
+            }
+        }
+        return metaData;
+    }
+
+    public static Map decodeMetadata(Map metaData, String[] jsonPaths, String secretKey1, String secretKey2) {
+        List<String> list = Arrays.asList(jsonPaths);
+        for (String jsonPath : list) {
+            try {
+                String read = JsonPath.read(metaData, jsonPath);
+                if (read != null) {
+                    String decrypt = Encrypter.decrypt(secretKey1, secretKey2, read);
+                    Object decryptObj = null;
+                    try {
+                        decryptObj = JsonUtils.unmarshalToList(decrypt);
+                    } catch (IOException ex) {
+                        try {
+                            decryptObj = JsonUtils.unmarshal(decrypt);
+                        } catch (IOException e) {
+                            decryptObj = decrypt;
+                        }
+                    }
+
+                    String marshal = JsonUtils.marshal(metaData);
+                    JsonNode updatedJson = JsonPath.using(configuration).parse(marshal).set(jsonPath, decryptObj).json();
+                    metaData = JsonUtils.convertClassToMap(updatedJson);
+                }
+            } catch (Exception ex) {
+
+            }
+        }
+        return metaData;
     }
 }

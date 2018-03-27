@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.uengine.iam.oauthscope.OauthScopeService;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
@@ -23,6 +24,9 @@ public class OauthUserRestController {
 
     @Autowired
     private OauthUserRepository oauthUserRepository;
+
+    @Autowired
+    private OauthScopeService scopeService;
 
     /**
      * 유저 리스트 반환

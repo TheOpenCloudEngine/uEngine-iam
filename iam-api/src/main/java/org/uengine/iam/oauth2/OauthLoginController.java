@@ -76,8 +76,10 @@ public class OauthLoginController {
                     String uiHost = environment.getProperty("ui-host");
                     String encodeResult = URLEncoder.encode(JsonUtils.marshal(authorizeResponse), "UTF-8");
                     String missingScopesResult = URLEncoder.encode(JsonUtils.marshal(missingScopes), "UTF-8");
+
                     response.sendRedirect(uiHost + "#/auth/login?authorizeResponse=" + encodeResult +
-                            "&status=fail&missingScopes=" + missingScopesResult);
+                            "&status=fail&missingScopes=" + missingScopesResult +
+                            "&userScopeCheckAll=" + authorizeResponse.getOauthClient().getUserScopeCheckAll());
                 }
             }
         } catch (Exception ex) {

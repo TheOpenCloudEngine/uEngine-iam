@@ -6,11 +6,16 @@ import org.springframework.stereotype.Service;
 import org.uengine.iam.mail.MailService;
 import org.uengine.iam.notification.NotificationType;
 import org.uengine.iam.oauthclient.OauthClient;
+import org.uengine.iam.oauthclient.OauthClientService;
+import org.uengine.iam.oauthscope.OauthScope;
+import org.uengine.iam.oauthscope.OauthScopeService;
 import org.uengine.iam.oauthuser.OauthUser;
 import org.uengine.iam.oauthuser.OauthUserRepository;
 import org.uengine.iam.util.DateUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class OauthRegistServiceImpl implements OauthRegistService {
@@ -23,6 +28,9 @@ public class OauthRegistServiceImpl implements OauthRegistService {
 
     @Autowired
     OauthUserRepository userRepository;
+
+    @Autowired
+    OauthScopeService scopeService;
 
     /**
      * 회원 가입 요청시 이메일을 발송하고 토큰을 저장한다.
@@ -119,6 +127,16 @@ public class OauthRegistServiceImpl implements OauthRegistService {
 
         //사용자를 등록한다.
         OauthUser oauthUser = oauthRegist.getOauthUser();
+
+        //클라이언트의 스코프를 자동생성해준다.
+        List<OauthScope> oauthScopes = scopeService.selectClientScopes(oauthClient.getClientKey());
+        List<String> userScopes = new ArrayList<>();
+        for (OauthScope oauthScope : oauthScopes) {
+            userScopes.add(oauthScope.getName());
+        }
+        oauthUser.getMetaData().put("scopes", userScopes);
+
+        //사용자 저장
         oauthUser = userRepository.insert(oauthUser);
 
         //사용자 가입확인 메일 발송.

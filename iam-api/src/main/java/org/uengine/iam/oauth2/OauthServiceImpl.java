@@ -65,32 +65,42 @@ public class OauthServiceImpl implements OauthService, InitializingBean {
      */
     @Override
     public List<OauthScope> validateUserScopes(OauthClient oauthClient, OauthUser oauthUser, List<OauthScope> requestedScopes) {
-        boolean hasScopse = true;
+        boolean hasScope = false;
         List<OauthScope> missingScopes = new ArrayList<OauthScope>();
 
-        //유저 스코프 체크할 경우
-        if (oauthClient.getUserScopeCheck()) {
-            if (oauthUser.getMetaData().containsKey("scopes")) {
-                try {
-                    List<String> userScopes = (List<String>) oauthUser.getMetaData().get("scopes");
+        if (oauthUser.getMetaData().containsKey("scopes")) {
+            try {
+                List<String> userScopes = (List<String>) oauthUser.getMetaData().get("scopes");
+
+                //모든 스코프가 필요할 경우
+                if (oauthClient.getUserScopeCheckAll()) {
+                    boolean hasMissingScope = false;
                     for (OauthScope oauthScope : requestedScopes) {
                         if (!userScopes.contains(oauthScope.getName())) {
                             missingScopes.add(oauthScope);
-                            hasScopse = false;
+                            hasMissingScope = true;
                         }
                     }
-                } catch (Exception ex) {
-                    hasScopse = false;
+                    hasScope = !hasMissingScope;
                 }
-            } else {
-                hasScopse = false;
+
+                //일부 스코프만 필요할 경우
+                else {
+                    for (OauthScope oauthScope : requestedScopes) {
+                        if (userScopes.contains(oauthScope.getName())) {
+                            hasScope = true;
+                        }
+                    }
+                    if (!hasScope) {
+                        missingScopes.addAll(requestedScopes);
+                    }
+                }
+            } catch (Exception ex) {
+                hasScope = false;
             }
         }
-        if (hasScopse) {
-            return null;
-        } else {
-            return missingScopes;
-        }
+
+        return hasScope ? null : missingScopes;
     }
 
     /**

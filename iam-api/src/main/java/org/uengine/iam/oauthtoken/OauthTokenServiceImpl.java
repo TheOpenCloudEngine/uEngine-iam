@@ -1,5 +1,6 @@
 package org.uengine.iam.oauthtoken;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
@@ -11,10 +12,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
+import org.springframework.data.web.JsonPath;
 import org.springframework.stereotype.Service;
 import org.uengine.iam.oauthclient.OauthClient;
 import org.uengine.iam.oauthclient.OauthClientService;
 import org.uengine.iam.oauthuser.OauthUser;
+import org.uengine.iam.util.Encrypter;
 import org.uengine.iam.util.JsonUtils;
 import org.uengine.iam.util.JwtUtils;
 
@@ -27,6 +30,9 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     private String key;
     private String issuer;
     private long oldRefreshTokenTimeout;
+    private String metadataEncoderSecret1;
+    private String metadataEncoderSecret2;
+    private String[] secureMetadataFields;
 
     public String getKey() {
         return key;
@@ -50,6 +56,30 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
     public void setOldRefreshTokenTimeout(long oldRefreshTokenTimeout) {
         this.oldRefreshTokenTimeout = oldRefreshTokenTimeout;
+    }
+
+    public String getMetadataEncoderSecret1() {
+        return metadataEncoderSecret1;
+    }
+
+    public void setMetadataEncoderSecret1(String metadataEncoderSecret1) {
+        this.metadataEncoderSecret1 = metadataEncoderSecret1;
+    }
+
+    public String getMetadataEncoderSecret2() {
+        return metadataEncoderSecret2;
+    }
+
+    public void setMetadataEncoderSecret2(String metadataEncoderSecret2) {
+        this.metadataEncoderSecret2 = metadataEncoderSecret2;
+    }
+
+    public String[] getSecureMetadataFields() {
+        return secureMetadataFields;
+    }
+
+    public void setSecureMetadataFields(String[] secureMetadataFields) {
+        this.secureMetadataFields = secureMetadataFields;
     }
 
     @Autowired
@@ -91,14 +121,13 @@ public class OauthTokenServiceImpl implements OauthTokenService {
             userMap.remove("userPassword");
 
             //remove secure metadata field.
-            String[] secureMetadataFields = oauthClient.getSecureMetadataFields();
             Map metaData = (Map) userMap.get("metaData");
             if (secureMetadataFields != null) {
-                List<String> list = Arrays.asList(oauthClient.getSecureMetadataFields());
-                for (String secureField : list) {
-                    metaData.remove(secureField);
-                }
+                metaData = JwtUtils.encodeMetadata(metaData, secureMetadataFields, metadataEncoderSecret1, metadataEncoderSecret2);
+                userMap.put("metaData", metaData);
             }
+
+            JwtUtils.decodeMetadata(JsonUtils.convertClassToMap(metaData), secureMetadataFields, metadataEncoderSecret1, metadataEncoderSecret2);
 
             context.put("user", userMap);
         }
