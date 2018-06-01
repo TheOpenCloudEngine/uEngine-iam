@@ -41,7 +41,7 @@
         dataType: "json",
         async: false,
         success: function (data) {
-          window.backendUrl = '';
+          window.backendUrl = location.hostname + (location.port ? ':' + location.port : '');
         },
         error: function () {
           window.backendUrl = 'localhost:8080';

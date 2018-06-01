@@ -66,14 +66,7 @@ http://localhost:8080/oauth/authorize?client_id=9a1e6155-c735-4986-b654-b1269a95
 
 ![](images/oauth_login.png)
 
-![](images/oauth_scope.png)
 
-이때, 사용자의 로그인과 스코프 체크 라이프타임을 설정할 수 있습니다.
-
-![](images/management.png)
-
-예로, 0 으로 설정할 경우 매번 사용자의 로그인와 스코프 체크를 요구하게 되고, 3600 일 경우 1시간 내에 로그인과 스코프 체크 한 경우에 대하여 다시 묻지 않습니다.
- 
 #### Step 3
 
 OCE IAM 은 입력받은 redirect_uri 로 GET 방식을 통해 code,state 값을 보내게 됩니다.
@@ -147,7 +140,7 @@ POST http://localhost:8080/oauth/access_token
  
  - token_type : 'JWT' 를 사용할 경우 어세스토큰이 jwt 형식으로 발급됩니다.
  
- - claim : JWT 토큰 발급을 요청할 경우 토큰에 추가될 claim 정보
+ - claim : JWT 토큰 발급을 요청할 경우 토큰에 추가될 claim 정보 (url encode 된 json string)
   
   
 정상적으로 인증을 받을 경우 다음의 리스폰스를 받을 수 있습니다.
@@ -217,7 +210,7 @@ error_description 필드에 보다 자세한 Human-readable ASCII text 형식의
 ### Implicit Grant Flow
 
 Public Client 인 브라우저 기반의 어플리케이션(Javascript application)이나 모바일 어플리케이션에서 이 방식을 사용하는 것을 추천합니다. 
-Client 증명서를 사용할 필요가 없습니다.
+Client 증명서를 사용할 필요가 없으며, 오늘날 SPA (싱글 페이지 어플리케이션) 패턴의 AngularJs 또는 VueJs 어플리케이션들의 일반적인 Oauth 인증 방식입니다.
 
 ![](images/implicit_flow.png)
 
@@ -278,6 +271,7 @@ http://app.domain/some_redirect_uri?scope=form-read&state=null&expires_in=3600&t
 
 에러 타입은 Authorization Code 와 동일합니다.
 
+
 ### Resource Owner Password Credentials Flow
 
 2-legged 방식의 인증입니다. Client 에 아이디/패스워드를 저장해 놓고 아이디/패스워드로 직접 access token 을 받아오는 방식입니다. 
@@ -319,7 +313,7 @@ POST http://localhost:8080/oauth/access_token
  
  - token_type : 'JWT' 를 사용할 경우 어세스토큰이 jwt 형식으로 발급됩니다.
 
- - claim : JWT 토큰 발급을 요청할 경우 토큰에 추가될 claim 정보
+ - claim : JWT 토큰 발급을 요청할 경우 토큰에 추가될 claim 정보 (json string)
   
   
 정상적으로 인증을 받을 경우 다음의 리스폰스를 받을 수 있습니다.
@@ -573,19 +567,29 @@ GET http://localhost:8080/oauth/token_info
 |---------------|--------|----------|
 | access_token  | String | TRUE     |
 
-Jwt 토큰인경우 iam 시스템의 secretKey 를 사용하기 때문에, 클라이언트에서는 토큰의 밸리데이션을 수행할 수 없습니다.
-
-대신에 토큰 파싱은 가능하며, claim object 의 정보를 사용할 목적인 경우 별도로 token_info 를 거치지 않아도 됩니다.
-
-하지만 토큰이 유효한지 체크하기 위해서는 token_info 을 거쳐야 합니다.
-
-OCE-IAM 이 JWT 토큰의 유효체크를 할 때는 DB 스캔 과정없이 처리합니다. 
 
 #### Bearer 토큰정보
 
-```
-유저 인증을 거친 토큰인경우 
+**Client Credentials Grant Flow**
 
+``` 
+Response
+
+Status 200
+
+{
+  "scope": "form-read",
+  "client": "9a1e6155-c735-4986-b654-b1269a955666",
+  "expires_in": 3588,
+  "additionalInformation": null,
+  "type": "client",
+  "refreshToken": "808b6f9e-9a74-4fc2-8049-82863d2b4694"
+}
+```
+
+**Code, Implicit, Resource Owner Password Credentials Flow**
+
+```
 Response
 
 Status 200
@@ -601,79 +605,71 @@ Status 200
 }
 ```
 
-```
-Client Credentials Grant Flow 토큰인경우 
-
-Response
-
-Status 200
-
-{
-  "scope": "form-read",
-  "client": "9a1e6155-c735-4986-b654-b1269a955666",
-  "expires_in": 3588,
-  "additionalInformation": null,
-  "type": "client",
-  "refreshToken": "808b6f9e-9a74-4fc2-8049-82863d2b4694"
-}
-```
-
 #### Jwt 토큰정보
 
-```
-유저 인증을 거친 토큰인경우 
+**Client Credentials Grant Flow**
 
+```
 Response
 
 Status 200
 
 {
-  "exp": 1462173460000,
+  "iss": "my-iam",
   "context": {
-    "scopes": "form:create",
-    "clientKey": "fcf5afd7-be50-4dac-949f-d4ab768b485d",
-    "userId": "1543c5ac2c5049b18058662da236f011",
-    "userName": "user1",
-    "managementId": "5e3432ad172644ea8041fe67eb8f5cbd",
-    "type": "user",
-    "refreshToken": "e8795856-4a7c-44f5-b6a3-4567e658e487",
-    "clientId": "97ed8f30da014800b92a24d8bed6d5a5"
-  },
-  "iss": "oce.iam",
-  "expires_in": 3590,
-  "claim": {
-    "aaa": "bbb"
-  },
-  "iat": 1462169860000
-}
-```
-
-```
-Client Credentials Grant Flow 토큰인경우 
-
-Response
-
-Status 200
-
-{
-  "exp": 1462172578000,
-  "context": {
-    "scopes": "form:create",
-    "clientKey": "fcf5afd7-be50-4dac-949f-d4ab768b485d",
-    "managementId": "5e3432ad172644ea8041fe67eb8f5cbd",
+    "clientKey": "my-client-key",
+    "scopes": [
+      "cloud-server"
+    ],
     "type": "client",
-    "refreshToken": "4549295d-897a-4d9d-b193-a72a15f2816b",
-    "clientId": "97ed8f30da014800b92a24d8bed6d5a5"
+    "refreshToken": "b5fd919d-b1cc-4e24-bc05-eea11db4b583"
   },
-  "iss": "oce.iam",
-  "expires_in": 3567,
   "claim": {
-    "aaa": "bbb"
+    "tenant": "aaa"
   },
-  "iat": 1462168978000
+  "exp": 1527865860,
+  "iat": 1527862260
 }
 ```
 
+**Code, Implicit, Resource Owner Password Credentials Flow**
+
+``` 
+Response
+
+Status 200
+
+{
+  "iss": "my-iam",
+  "context": {
+    "clientKey": "my-client-key",
+    "scopes": [
+      "cloud-server"
+    ],
+    "type": "user",
+    "userName": "darkgodarkgo@gmail.com",
+    "user": {
+      "userName": "darkgodarkgo@gmail.com",
+      "metaData": {
+        "email": "darkgodarkgo@gmail.com",
+        "locale": "ko_KR",
+        "name": "박승필",
+        "scopes": [
+          "cloud-server"
+        ]
+      },
+      "regDate": 1515384582878,
+      "updDate": 1522168591056
+    },
+    "refreshToken": "b5fd919d-b1cc-4e24-bc05-eea11db4b583"
+  },
+  "claim": {
+    "tenant": "aaa"
+  },
+  "exp": 1527865860,
+  "iat": 1527862260
+}
+```
 
 토큰이 만기되었거나 유효하지 않을 경우 400 으로 응답이 오며, 각 상황의 error 필드 문구는 다음과 같습니다.
 
@@ -706,8 +702,4 @@ ex)
  - server_error
  
  - temporarily_unavailable
-
-## REST API
-
-OCE IAM 의 /rest/console 주소를 통하여 살펴볼 수 있습니다.
 

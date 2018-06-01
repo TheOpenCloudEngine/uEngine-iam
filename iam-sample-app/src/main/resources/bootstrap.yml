@@ -10,6 +10,7 @@ spring:
 
 # ui 호스트
 ui-host: http://localhost:8081/
+# ui-host: /
 
 ---
 spring:

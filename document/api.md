@@ -1,23 +1,24 @@
 # OCE IAM
 
-## Rest Api
+## Rest Api Using swagger
 
-IAM 구동 후,  /rest/console 에 접속하여 테스트합니다.
+Swagger Located at http://localhost:8080/static/swagger/index.html
 
-우측 상단에 Authorize 를 클릭하셔서 management-key, management-secret 을 입력하시면 테스트가 가능합니다.
+client-key and client-secret are required which described in `application.yml` file.
 
 ![](images/swagger.png)
 
-코드상에서 호출하실 경우 헤더에 management-key , management-secret 값을 주어야 합니다.
+## Rest Api Using code
 
-예)
+client-key and client-secret are required in http header. ex:
+
 
 ```
 curl -X GET \
 --header 'Accept: application/json' \
---header 'management-key: bd0380d0-1220-4676-91dc-c6d6f444136c' \
---header 'management-secret: 6abc6003-b181-465f-9027-b5824c1a3ecd' \
-'http://localhost:8080/rest/v1/user'
+--header 'client-key: my-client-key' \
+--header 'client-secret: my-client-secret' \
+'http://localhost:8080/rest/v1/scope'
 ```
 
 
