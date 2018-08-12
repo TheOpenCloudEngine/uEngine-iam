@@ -1,9 +1,11 @@
 package org.uengine.iam.client.model;
 
+import java.io.Serializable;
+
 /**
  * Created by uengine on 2015. 6. 3..
  */
-public class OauthAvatar {
+public class OauthAvatar implements Serializable {
 
     private String userName;
     private String contentType;

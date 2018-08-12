@@ -61,6 +61,31 @@ iam:
     from-address: sppark@uengine.org
     from-name: uengine
 
+  billing:
+    url: "http://billing.pas-mini.io"
+    authentication: "Basic ZGFya2dvZGFya2dvQGdtYWlsLmNvbTpnb3N1MjM1NDY="
+    organization: "37e1fcf5-8244-46bb-a4e2-3a1c7363fdcb"
+    account-sync: true
+    account-sync-body:
+      name: "$.name" #required
+      email: "$.email" #required
+      billCycleDayLocal: 0 #required
+      currency: "KRW" #required
+      locale: "ko_KR" #required
+      parentAccountId: null
+      isPaymentDelegatedToParent: false
+      timeZone: "UTC"
+      address1: "$.address1"
+      address2: "$.address2"
+      postalCode: "$.postalCode"
+      company: "$.company"
+      city: "$.city"
+      state: "$.state"
+      country: "KR"
+      phone: "$.phone"
+      notes: "$.notes"
+      isNotifiedForInvoices: true
+
 # =============================================
 #  스코프 - 주로 백엔드 서비스에 해당됩니다.
 # =============================================
@@ -143,10 +168,6 @@ spring:
     url: jdbc:mysql://localhost:3306/msa
     username: root
     password:
-#  datasource:
-#    url: jdbc:mysql://192.168.99.100:13306/uengine
-#    username: root
-#    password: my-secret-pw
 
 # ======================
 #  Eureka Configuration

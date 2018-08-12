@@ -1,9 +1,11 @@
 package org.uengine.iam.client.model;
 
+import java.io.Serializable;
+
 /**
  * Created by uengine on 2015. 6. 3..
  */
-public class OauthRegist {
+public class OauthRegist implements Serializable {
     private long id;
     private String clientKey;
     private NotificationType notification_type;

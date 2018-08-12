@@ -1,9 +1,11 @@
 package org.uengine.iam.client.model;
 
+import java.io.Serializable;
+
 /**
  * Created by uengine on 2015. 6. 3..
  */
-public class OauthScope {
+public class OauthScope implements Serializable {
     private String name;
     private String description;
 

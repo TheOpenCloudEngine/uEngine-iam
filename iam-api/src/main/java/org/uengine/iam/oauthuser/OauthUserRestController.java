@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.uengine.iam.oauthscope.OauthScopeService;
+import org.uengine.iam.oauthuser.billing.BillingService;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
@@ -27,6 +28,9 @@ public class OauthUserRestController {
 
     @Autowired
     private OauthScopeService scopeService;
+
+    @Autowired
+    private BillingService billingService;
 
     /**
      * 유저 리스트 반환
@@ -66,7 +70,9 @@ public class OauthUserRestController {
         if (existUser != null) {
             new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<>(oauthUserRepository.insert(oauthUser), HttpStatus.CREATED);
+        OauthUser user = oauthUserRepository.insert(oauthUser);
+        billingService.syncUser(user);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     /**
@@ -85,7 +91,9 @@ public class OauthUserRestController {
         if (existUser == null) {
             new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(oauthUserRepository.update(oauthUser), HttpStatus.OK);
+        OauthUser user = oauthUserRepository.update(oauthUser);
+        billingService.syncUser(user);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     /**

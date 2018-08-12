@@ -1,12 +1,13 @@
 package org.uengine.iam.client.model;
 
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by uengine on 2015. 6. 3..
  */
-public class OauthAccessToken {
+public class OauthAccessToken implements Serializable {
 
     private long id;
     private String type;

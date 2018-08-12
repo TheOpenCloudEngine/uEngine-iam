@@ -1,11 +1,13 @@
 package org.uengine.iam.client.model;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by uengine on 2015. 6. 3..
  */
-public class OauthUser {
+public class OauthUser implements Serializable {
 
     private String userName;
     private String userPassword;
@@ -30,6 +32,9 @@ public class OauthUser {
     }
 
     public Map<String, Object> getMetaData() {
+        if (metaData == null) {
+            return new HashMap<>();
+        }
         return metaData;
     }
 
