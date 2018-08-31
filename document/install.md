@@ -113,6 +113,9 @@ scopes:
     description: Enable cloud service
   - name: bpm
     description: Enalbe bpm service
+  # If billing service required.  
+  - name: billing
+    description: Enalbe billing service
 ```
 
 
