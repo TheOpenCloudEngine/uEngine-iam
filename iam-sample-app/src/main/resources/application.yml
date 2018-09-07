@@ -1,26 +1,19 @@
-management:
-  security:
-    enabled: false
-
 security:
-  basic:
-    enabled: false
-  ignored: /**
   password:
     encoder:
       secret1: Bar12345Bar12345
       secret2: ThisIsASecretKet
 
 spring:
-  security:
-    enabled: false
   data:
     rest:
       basePath: /api/v1
 
 server:
   port: 8080
-  servletPath: /
+  servlet:
+    context-path: /
+
 
 # ========================================
 #  IAM 시스템 Configuration
@@ -255,8 +248,8 @@ eureka:
       enabled: true
     enabled: false
   instance:
-    statusPageUrlPath: ${server.servletPath}info
-    healthCheckUrlPath: ${server.servletPath}health
+    statusPageUrlPath: ${server.servlet.context-path}info
+    healthCheckUrlPath: ${server.servlet.context-path}health
     metadataMap:
         deployment: local
         profile: local
