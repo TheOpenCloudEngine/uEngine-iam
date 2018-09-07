@@ -28,6 +28,10 @@ public class MyUserRepositoryImpl implements OauthUserRepository {
      */
     @Override
     public OauthUser insert(OauthUser oauthUser) {
+
+        //마이바티스쓰던 멀쓰던...저장.
+        //또는 아예 사용자 입력, 업데이트를 IAM 에 안하는게 일반적 시나리오
+        //대부분 LDAP / Active Derictory / ERP 시스템에서 관리.
         JPAUserEntity entity = this.toMyModel(oauthUser);
         return this.toOauthUser(userRepository.save(entity));
     }
@@ -59,6 +63,8 @@ public class MyUserRepositoryImpl implements OauthUserRepository {
      */
     @Override
     public OauthUser findByUserName(String userName) {
+        //ERP 시스템 연동.
+
         return this.toOauthUser(userRepository.findByUserName(userName));
     }
 
@@ -97,6 +103,9 @@ public class MyUserRepositoryImpl implements OauthUserRepository {
      */
     @Override
     public OauthUser findByUserNameAndUserPassword(String userName, String userPassword) {
+
+        //ERP 시스템 연동.
+
         String provider = null;
         return this.toOauthUser(userRepository.findByUserNameAndUserPasswordAndProvider(userName, userPassword, provider));
     }
@@ -109,6 +118,8 @@ public class MyUserRepositoryImpl implements OauthUserRepository {
      */
     @Override
     public OauthUser findByUserNameAndUserPasswordAndProvider(String userName, String userPassword, String provider) {
+        //ERP 시스템 연동.
+
         return this.toOauthUser(userRepository.findByUserNameAndUserPasswordAndProvider(userName, userPassword, provider));
     }
 
@@ -120,6 +131,9 @@ public class MyUserRepositoryImpl implements OauthUserRepository {
      */
     @Override
     public OauthUser findByUserNameAndProvider(String userName, String provider) {
+
+        //ERP 시스템 연동.
+
         return this.toOauthUser(userRepository.findByUserNameAndProvider(userName, provider));
     }
 

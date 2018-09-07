@@ -73,7 +73,7 @@ public class OauthServiceImpl implements OauthService, InitializingBean {
                 List<String> userScopes = (List<String>) oauthUser.getMetaData().get("scopes");
 
                 //모든 스코프가 필요할 경우
-                if (oauthClient.getUserScopeCheckAll()) {
+                if (oauthClient.isUserScopeCheckAll()) {
                     boolean hasMissingScope = false;
                     for (OauthScope oauthScope : requestedScopes) {
                         if (!userScopes.contains(oauthScope.getName())) {
@@ -290,7 +290,7 @@ public class OauthServiceImpl implements OauthService, InitializingBean {
                         accessToken.setUserName(authorizeResponse.getOauthUser().getUserName());
                         accessToken.setClientKey(authorizeResponse.getOauthClient().getClientKey());
 
-                        if (authorizeResponse.getOauthClient().getRefreshTokenValidity()) {
+                        if (authorizeResponse.getOauthClient().isRefreshTokenValidity()) {
                             accessToken.setRefreshToken(UUID.randomUUID().toString());
                         }
 

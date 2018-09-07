@@ -1,20 +1,28 @@
 package org.uengine.iam.mail;
 
 import com.samskivert.mustache.Mustache;
+import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.uengine.iam.notification.NotificationType;
 import org.uengine.iam.notification.Template;
 import org.uengine.iam.notification.TemplateService;
 import org.uengine.iam.oauthclient.OauthClient;
 import org.uengine.iam.oauthuser.OauthUser;
-import org.uengine.iam.scheduler.JobScheduler;
+import org.uengine.iam.util.ApplicationContextRegistry;
 import org.uengine.iam.util.ServiceException;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.*;
 
@@ -31,7 +39,7 @@ public class MailServiceImpl implements MailService {
     private TemplateService templateService;
 
     @Autowired
-    private JobScheduler jobScheduler;
+    private MailConfig mailConfig;
 
     @Override
     public void notificationMail(OauthClient oauthClient, OauthUser oauthUser, NotificationType notificationType, String redirect_url, String token) throws Exception {
@@ -53,7 +61,7 @@ public class MailServiceImpl implements MailService {
         if (!metaData.containsKey("email")) {
             throw new ServiceException("OauthUser email field is required. " + oauthUser.getUserName());
         }
-        String email = metaData.get("email").toString();
+        String toUser = metaData.get("email").toString();
 
         //템플릿 가져오기
         Template template = templateService.selectByClientKeyAndType(oauthClient.getClientKey(), notificationType);
@@ -82,16 +90,59 @@ public class MailServiceImpl implements MailService {
         String body = executeTemplateText(template.getBody(), model);
         String subject = executeTemplateText(template.getSubject(), model);
 
-        Map map = new HashMap();
-        map.put("subject", subject);
-        map.put("body", body);
-        map.put("toUser", email);
-
-        jobScheduler.startJobImmediatly(UUID.randomUUID().toString(), "notificationMail", map);
+        this.sendMail(body, subject, toUser);
     }
 
     public String executeTemplateText(final String templateText, final Map<String, Object> data) {
         final com.samskivert.mustache.Template template = Mustache.compiler().nullValue("").compile(templateText);
         return template.execute(data);
+    }
+
+
+    @Async
+    public void sendMail(String body, String subject, String toUser) {
+
+        Session session = this.setMailProperties(toUser);
+        try {
+            InternetAddress from = new InternetAddress(mailConfig.getFromAddress(), mailConfig.getFromName());
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(from);
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toUser));
+            message.setSubject(subject);
+            message.setContent(body, "text/html; charset=utf-8");
+            Transport.send(message);
+
+            logger.info("{} 메일주소로 메일을 발송했습니다.", toUser);
+        } catch (Exception e) {
+            throw new ServiceException("메일을 발송할 수 없습니다.", e);
+        }
+    }
+
+    private Session setMailProperties(final String toUser) {
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", mailConfig.isSmtpAuth() + "");
+        props.put("mail.smtp.starttls.enable", mailConfig.isSmtpStarttlsEnable() + "");
+        props.put("mail.smtp.host", mailConfig.getHost());
+        props.put("mail.smtp.port", mailConfig.getPort());
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.debug", "true");
+
+        LogOutputStream loggerToStdOut = new LogOutputStream() {
+            @Override
+            protected void processLine(String line, int level) {
+                logger.debug("[JavaMail] [{}] {}", toUser, line);
+            }
+        };
+
+        Session session = Session.getInstance(props,
+                new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(mailConfig.getUsername(), mailConfig.getPassword());
+                    }
+                }
+        );
+        session.setDebug(true);
+        session.setDebugOut(new PrintStream(loggerToStdOut));
+        return session;
     }
 }

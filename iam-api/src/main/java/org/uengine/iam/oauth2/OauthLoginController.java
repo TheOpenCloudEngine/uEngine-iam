@@ -84,7 +84,7 @@ public class OauthLoginController {
 
                     response.sendRedirect(uiHost + "#/auth/login?authorizeResponse=" + encodeResult +
                             "&status=fail&missingScopes=" + missingScopesResult +
-                            "&userScopeCheckAll=" + authorizeResponse.getOauthClient().getUserScopeCheckAll());
+                            "&userScopeCheckAll=" + authorizeResponse.getOauthClient().isUserScopeCheckAll());
                 }
             }
         } catch (Exception ex) {

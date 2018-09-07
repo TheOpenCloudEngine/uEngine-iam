@@ -3,6 +3,7 @@ package org.uengine.iam.oauthregist;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
 import org.uengine.iam.notification.NotificationType;
 import org.uengine.iam.oauthuser.OauthUser;
 import org.uengine.iam.util.JsonUtils;
@@ -16,6 +17,7 @@ import java.util.Map;
 /**
  * Created by uengine on 2015. 6. 3..
  */
+@Data
 @Entity
 @Table(name = "oauth_regist")
 public class OauthRegist {
@@ -38,14 +40,6 @@ public class OauthRegist {
 
     @Column(columnDefinition = "TEXT")
     private String authorizeResponse;
-
-    public String getAuthorizeResponse() {
-        return authorizeResponse;
-    }
-
-    public void setAuthorizeResponse(String authorizeResponse) {
-        this.authorizeResponse = authorizeResponse;
-    }
 
     public OauthUser getOauthUser() {
         try {
@@ -81,69 +75,5 @@ public class OauthRegist {
     @PreUpdate
     void preUpdate() {
         this.updDate = new Date().getTime();
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getClientKey() {
-        return clientKey;
-    }
-
-    public void setClientKey(String clientKey) {
-        this.clientKey = clientKey;
-    }
-
-    public NotificationType getNotification_type() {
-        return notification_type;
-    }
-
-    public void setNotification_type(NotificationType notification_type) {
-        this.notification_type = notification_type;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getRedirect_url() {
-        return redirect_url;
-    }
-
-    public void setRedirect_url(String redirect_url) {
-        this.redirect_url = redirect_url;
-    }
-
-    public String getOauthUserJson() {
-        return oauthUserJson;
-    }
-
-    public void setOauthUserJson(String oauthUserJson) {
-        this.oauthUserJson = oauthUserJson;
-    }
-
-    public long getRegDate() {
-        return regDate;
-    }
-
-    public void setRegDate(long regDate) {
-        this.regDate = regDate;
-    }
-
-    public long getUpdDate() {
-        return updDate;
-    }
-
-    public void setUpdDate(long updDate) {
-        this.updDate = updDate;
     }
 }

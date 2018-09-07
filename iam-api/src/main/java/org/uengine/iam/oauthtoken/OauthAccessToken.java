@@ -3,6 +3,7 @@ package org.uengine.iam.oauthtoken;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Joiner;
+import lombok.Data;
 import org.uengine.iam.util.JsonUtils;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import java.util.List;
 /**
  * Created by uengine on 2015. 6. 3..
  */
+@Data
 @Entity
 @Table(name = "oauth_token")
 public class OauthAccessToken {
@@ -67,85 +69,5 @@ public class OauthAccessToken {
         } catch (Exception ex) {
             this.scopesString = "";
         }
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getScopesString() {
-        return scopesString;
-    }
-
-    public void setScopesString(String scopesString) {
-        this.scopesString = scopesString;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getClientKey() {
-        return clientKey;
-    }
-
-    public void setClientKey(String clientKey) {
-        this.clientKey = clientKey;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public String getOldRefreshToken() {
-        return oldRefreshToken;
-    }
-
-    public void setOldRefreshToken(String oldRefreshToken) {
-        this.oldRefreshToken = oldRefreshToken;
-    }
-
-    public long getRegDate() {
-        return regDate;
-    }
-
-    public void setRegDate(long regDate) {
-        this.regDate = regDate;
-    }
-
-    public long getUpdDate() {
-        return updDate;
-    }
-
-    public void setUpdDate(long updDate) {
-        this.updDate = updDate;
     }
 }

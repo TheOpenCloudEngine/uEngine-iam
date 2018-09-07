@@ -1,5 +1,6 @@
 package org.uengine.iam.oauthscope;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+@Data
 @Service
 @ConfigurationProperties
 public class OauthScopeServiceImpl implements OauthScopeService {
@@ -22,14 +24,6 @@ public class OauthScopeServiceImpl implements OauthScopeService {
     private OauthClientService clientService;
 
     private List<OauthScope> scopes;
-
-    public List<OauthScope> getScopes() {
-        return scopes;
-    }
-
-    public void setScopes(List<OauthScope> scopes) {
-        this.scopes = scopes;
-    }
 
     @Override
     public OauthScope selectByName(String name) {

@@ -40,7 +40,7 @@ public class CronTable implements InitializingBean {
         try {
             List<OauthClient> clients = clientService.selectAll();
             for (OauthClient client : clients) {
-                if (client.getAutoDeletionToken()) {
+                if (client.isAutoDeletionToken()) {
                     long nowTime = new Date().getTime();
                     long idleTime = 60; //sec
                     Long refreshTokenLifetime = client.getRefreshTokenLifetime();

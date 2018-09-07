@@ -74,7 +74,7 @@ public class CorsFilter implements Filter {
             //클라이언트로 권한 파악
             else {
                 OauthClient client = clientService.selectByClientKey(clientKey);
-                if (client != null && client.getAccessRestEnable() && client.getClientSecret().equals(clientSecret)) {
+                if (client != null && client.isAccessRestEnable() && client.getClientSecret().equals(clientSecret)) {
                     enable = true;
                 }
             }

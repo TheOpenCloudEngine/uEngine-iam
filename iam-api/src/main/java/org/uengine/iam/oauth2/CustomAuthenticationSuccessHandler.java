@@ -1,6 +1,8 @@
 package org.uengine.iam.oauth2;
 
 import com.google.common.base.Joiner;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,8 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 @Component
+@Data
+@NoArgsConstructor
 public class CustomAuthenticationSuccessHandler extends AbstractAuthenticationTargetUrlRequestHandler implements AuthenticationSuccessHandler {
 
     private SocialClientResources socialClientResources;
@@ -34,12 +38,6 @@ public class CustomAuthenticationSuccessHandler extends AbstractAuthenticationTa
     private OauthUserRepository userRepository;
     private OauthRegistService registService;
 
-    public CustomAuthenticationSuccessHandler() {
-    }
-
-    public CustomAuthenticationSuccessHandler(String defaultTargetUrl) {
-        this.setDefaultTargetUrl(defaultTargetUrl);
-    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -58,6 +56,7 @@ public class CustomAuthenticationSuccessHandler extends AbstractAuthenticationTa
 
                 AuthorizeResponse authorizeResponse = new AuthorizeResponse();
                 OauthUser oauthUser = userRepository.findByUserNameAndProvider(name, socialClientResources.getClientName());
+
                 if (oauthUser == null) {
                     oauthUser = new OauthUser();
                     // 회원가입
@@ -73,8 +72,8 @@ public class CustomAuthenticationSuccessHandler extends AbstractAuthenticationTa
                 }
 
                 String scops = null;
-                if( oauthUser.getMetaData().get("scopes") != null && oauthUser.getMetaData().get("scopes") instanceof List){
-                    scops = Joiner.on(",").join((List)oauthUser.getMetaData().get("scopes"));
+                if (oauthUser.getMetaData().get("scopes") != null && oauthUser.getMetaData().get("scopes") instanceof List) {
+                    scops = Joiner.on(",").join((List) oauthUser.getMetaData().get("scopes"));
                 }
 
                 authorizeResponse.setClientId(socialClientResources.getParentClientId());
@@ -87,7 +86,7 @@ public class CustomAuthenticationSuccessHandler extends AbstractAuthenticationTa
                 authorizeResponse.setRedirectUri(socialClientResources.getRedirectUri());
                 oauthService.processAuthorize(authorizeResponse, response);
 
-            }else{
+            } else {
                 String uiHost = environment.getProperty("ui-host");
                 response.sendRedirect(uiHost + "#/auth/error");
             }
@@ -95,29 +94,5 @@ public class CustomAuthenticationSuccessHandler extends AbstractAuthenticationTa
             String uiHost = environment.getProperty("ui-host");
             response.sendRedirect(uiHost + "#/auth/error");
         }
-    }
-
-    public void setSocialClientResources(SocialClientResources socialClientResources) {
-        this.socialClientResources = socialClientResources;
-    }
-
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
-
-    public void setOauthService(OauthService oauthService) {
-        this.oauthService = oauthService;
-    }
-
-    public void setClientService(OauthClientService clientService) {
-        this.clientService = clientService;
-    }
-
-    public void setUserRepository(OauthUserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public void setRegistService(OauthRegistService registService) {
-        this.registService = registService;
     }
 }

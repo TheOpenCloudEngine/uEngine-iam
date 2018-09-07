@@ -8,6 +8,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -23,6 +24,7 @@ import org.uengine.iam.util.JwtUtils;
 
 import java.util.*;
 
+@Data
 @Service
 @ConfigurationProperties(prefix = "iam.jwt")
 public class OauthTokenServiceImpl implements OauthTokenService {
@@ -33,54 +35,6 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     private String metadataEncoderSecret1;
     private String metadataEncoderSecret2;
     private String[] secureMetadataFields;
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getIssuer() {
-        return issuer;
-    }
-
-    public void setIssuer(String issuer) {
-        this.issuer = issuer;
-    }
-
-    public long getOldRefreshTokenTimeout() {
-        return oldRefreshTokenTimeout;
-    }
-
-    public void setOldRefreshTokenTimeout(long oldRefreshTokenTimeout) {
-        this.oldRefreshTokenTimeout = oldRefreshTokenTimeout;
-    }
-
-    public String getMetadataEncoderSecret1() {
-        return metadataEncoderSecret1;
-    }
-
-    public void setMetadataEncoderSecret1(String metadataEncoderSecret1) {
-        this.metadataEncoderSecret1 = metadataEncoderSecret1;
-    }
-
-    public String getMetadataEncoderSecret2() {
-        return metadataEncoderSecret2;
-    }
-
-    public void setMetadataEncoderSecret2(String metadataEncoderSecret2) {
-        this.metadataEncoderSecret2 = metadataEncoderSecret2;
-    }
-
-    public String[] getSecureMetadataFields() {
-        return secureMetadataFields;
-    }
-
-    public void setSecureMetadataFields(String[] secureMetadataFields) {
-        this.secureMetadataFields = secureMetadataFields;
-    }
 
     @Autowired
     Environment environment;
