@@ -31,6 +31,9 @@ public class JPAUserEntity {
     @Column(name = "userName", unique = true)
     private String userName;
 
+    @Column(name = "provider")
+    private String provider;
+
     private String userPassword;
 
     @Column(name = "regDate", nullable = false, updatable = false, insertable = true)
@@ -38,12 +41,12 @@ public class JPAUserEntity {
 
     @Column(name = "updDate", nullable = false, updatable = true, insertable = true)
     private long updDate;
-
     @PrePersist
     void preInsert() {
         this.regDate = new Date().getTime();
         this.updDate = new Date().getTime();
     }
+
 
     @PreUpdate
     void preUpdate() {
@@ -82,6 +85,13 @@ public class JPAUserEntity {
         this.userPassword = userPassword;
     }
 
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
 
     @JsonIgnore
     @Column(columnDefinition = "TEXT")

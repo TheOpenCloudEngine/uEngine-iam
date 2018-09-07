@@ -97,7 +97,30 @@ public class MyUserRepositoryImpl implements OauthUserRepository {
      */
     @Override
     public OauthUser findByUserNameAndUserPassword(String userName, String userPassword) {
-        return this.toOauthUser(userRepository.findByUserNameAndUserPassword(userName, userPassword));
+        String provider = null;
+        return this.toOauthUser(userRepository.findByUserNameAndUserPasswordAndProvider(userName, userPassword, provider));
+    }
+
+    /**
+     * userName 과 userPassword 로 사용자를 찾는다.
+     * @param userName
+     * @param userPassword
+     * @return
+     */
+    @Override
+    public OauthUser findByUserNameAndUserPasswordAndProvider(String userName, String userPassword, String provider) {
+        return this.toOauthUser(userRepository.findByUserNameAndUserPasswordAndProvider(userName, userPassword, provider));
+    }
+
+    /**
+     * userName 과 provider 로 사용자를 찾는다.
+     * @param userName
+     * @param provider
+     * @return
+     */
+    @Override
+    public OauthUser findByUserNameAndProvider(String userName, String provider) {
+        return this.toOauthUser(userRepository.findByUserNameAndProvider(userName, provider));
     }
 
     /**
@@ -168,6 +191,7 @@ public class MyUserRepositoryImpl implements OauthUserRepository {
         oauthUser.setMetaData(entity.getMetaData());
         oauthUser.setRegDate(entity.getRegDate());
         oauthUser.setUpdDate(entity.getUpdDate());
+        oauthUser.setProvider(entity.getProvider());
         return oauthUser;
     }
 
@@ -184,6 +208,7 @@ public class MyUserRepositoryImpl implements OauthUserRepository {
         entity.setUserName(oauthUser.getUserName());
         entity.setUserPassword(oauthUser.getUserPassword());
         entity.setMetaData(oauthUser.getMetaData());
+        entity.setProvider(oauthUser.getProvider());
         return entity;
     }
 }

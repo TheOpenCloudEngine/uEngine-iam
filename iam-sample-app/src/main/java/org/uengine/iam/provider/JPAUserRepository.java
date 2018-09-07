@@ -23,5 +23,8 @@ public interface JPAUserRepository extends PagingAndSortingRepository<JPAUserEnt
 
 
     JPAUserEntity findByUserNameAndUserPassword(@Param("userName") String userName, @Param("userPassword") String userPassword);
+    JPAUserEntity findByUserNameAndUserPasswordAndProvider(@Param("userName") String userName, @Param("userPassword") String userPassword, @Param("provider") String provider);
+
+    JPAUserEntity findByUserNameAndProvider(@Param("userName") String userName, @Param("provider") String provider);
 
 }

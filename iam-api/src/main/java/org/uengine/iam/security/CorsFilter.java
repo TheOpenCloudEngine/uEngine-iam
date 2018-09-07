@@ -1,8 +1,11 @@
 package org.uengine.iam.security;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.uengine.iam.oauthclient.OauthClient;
 import org.uengine.iam.oauthclient.OauthClientService;
 import org.uengine.iam.util.ApplicationContextRegistry;
@@ -19,7 +22,9 @@ import java.util.*;
 /**
  * Created by uengine on 2016. 4. 22..
  */
-@WebFilter
+//@WebFilter
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
     @Override

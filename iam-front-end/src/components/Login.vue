@@ -59,6 +59,12 @@
         </md-input-container>
 
         <md-card-actions>
+          <md-button v-on:click="moveLogin('facebook')">facebook Login</md-button>
+          <md-button v-on:click="moveLogin('github')">github Login</md-button>
+          <md-button v-on:click="moveLogin('google')">google Login</md-button>
+        </md-card-actions>
+
+        <md-card-actions>
           <md-button type="submit">Login</md-button>
           <md-button v-on:click="move('signup')">Sign Up</md-button>
           <md-button v-on:click="move('forgot')">Forgot?</md-button>
@@ -270,6 +276,11 @@
             authorizeResponse: JSON.stringify(me.authorizeResponse)
           }
         })
+      },
+      moveLogin: function (command) {
+
+        var me = this;
+        me.iam.loginSocial(command)
       },
 
       verification: function () {

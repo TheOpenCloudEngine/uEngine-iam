@@ -150,6 +150,72 @@ clients:
     # 사용자 알림 메일 발송 SIGN_UP,SIGNED_UP,FORGOT_PASSWORD,PASSWORD_CHANGED | ALL
     notification: ALL
 
+facebook:
+  clientName : facebook
+  client:
+    clientId: 2226652360914220
+    clientSecret: d0e6b7b32a3c95e0457ca618f4b0efd4
+    accessTokenUri: https://graph.facebook.com/oauth/access_token
+    userAuthorizationUri: https://www.facebook.com/dialog/oauth
+    tokenName: oauth_token
+    authenticationScheme: query
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://graph.facebook.com/me?fields=id,name,email,picture
+  # 인증 결과값을 받을 형식 token / code
+  responseType: token
+  # responseType 이 token 일 경우 설정.
+  tokenType: JWT
+  # 인증 성공후 redirectUri
+  redirectUri: http://app.domain/some_redirect_uri
+  # 상위 ClientId 의 기본 셋팅을 상속함
+  parentClientId: ${clients[0].clientKey}
+  # 소셜 로그인 기본 scope 설정
+  scopes : cloud-server,bpm
+
+
+github:
+  clientName : github
+  client:
+    clientId: 057eebbd3686c068b1ce
+    clientSecret: f7414a9b5b7e71ea215cc730e28c340a02c8ebfa
+    accessTokenUri: https://github.com/login/oauth/access_token
+    userAuthorizationUri: https://github.com/login/oauth/authorize
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://api.github.com/user
+  # 인증 결과값을 받을 형식 token / code
+  responseType: token
+  # responseType 이 token 일 경우 설정.
+  tokenType: JWT
+  # 인증 성공후 redirectUri
+  redirectUri: http://app.domain/some_redirect_uri
+  # 상위 ClientId 의 기본 셋팅을 상속함
+  parentClientId: ${clients[0].clientKey}
+  # 소셜 로그인 기본 scope 설정
+  scopes : cloud-server,bpm
+
+google :
+  clientName : google
+  client :
+    clientId : 970411080478-rjvn7k0g9goush0pve0ipokf7i4gcug8.apps.googleusercontent.com
+    clientSecret: _5QN578FsFP1MazLGEScbNUK
+    accessTokenUri: https://accounts.google.com/o/oauth2/token
+    userAuthorizationUri: https://accounts.google.com/o/oauth2/auth
+    clientAuthenticationScheme: form
+    scope: email, profile
+  resource:
+    userInfoUri: https://www.googleapis.com/oauth2/v2/userinfo
+  # 인증 결과값을 받을 형식 token / code
+  responseType: token
+  # responseType 이 token 일 경우 설정.
+  tokenType: JWT
+  # 인증 성공후 redirectUri
+  redirectUri: http://app.domain/some_redirect_uri
+  # 상위 ClientId 의 기본 셋팅을 상속함
+  parentClientId: ${clients[0].clientKey}
+  # 소셜 로그인 기본 scope 설정
+  scopes : cloud-server,bpm
 ---
 # =============================================
 #  레파지토리 - 데이터 베이스 정보입니다.
@@ -162,12 +228,20 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+#        dialect: org.hibernate.dialect.MySQLDialect
         show_sql: true
   datasource:
-    url: jdbc:mysql://localhost:3306/msa
+#    url: jdbc:mysql://localhost:3306/msa
+#    username: root
+#    password:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://bpm-dev.cxp0klyrcjfk.ap-northeast-2.rds.amazonaws.com:3306/iam
     username: root
-    password:
+    password: 18925ung
+
+logging:
+  level:
+    org.springframework.security: DEBUG
 
 # ======================
 #  Eureka Configuration
@@ -179,6 +253,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     healthcheck:
       enabled: true
+    enabled: false
   instance:
     statusPageUrlPath: ${server.servletPath}info
     healthCheckUrlPath: ${server.servletPath}health

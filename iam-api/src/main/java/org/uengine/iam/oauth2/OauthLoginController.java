@@ -2,14 +2,18 @@ package org.uengine.iam.oauth2;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Joiner;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.uengine.iam.oauthclient.OauthClient;
+import org.uengine.iam.oauthclient.OauthClientService;
 import org.uengine.iam.oauthscope.OauthScope;
 import org.uengine.iam.oauthuser.OauthUser;
 import org.uengine.iam.oauthuser.OauthUserRepository;
@@ -22,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +54,8 @@ public class OauthLoginController {
     public void login(HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
         try {
+            new SecurityContextLogoutHandler().logout(request, null, null);
+
             String userName = request.getParameter("userName");
             String userPassword = request.getParameter("userPassword");
             Map authorizeResponseMap = JsonUtils.unmarshal(request.getParameter("authorizeResponse"));
@@ -88,6 +93,12 @@ public class OauthLoginController {
         }
     }
 
+    @RequestMapping(value = "/login/facebook/success", method = RequestMethod.GET, produces = "application/json")
+    public void socialLoginSuccess(HttpServletRequest request, HttpServletResponse response
+    ) throws Exception {
+
+    }
+
     /**
      * Authorization Code,Implicit Grant 플로우의 3th 파티 앱이 최초 요청하는 로그인 페이지.
      *
@@ -101,6 +112,8 @@ public class OauthLoginController {
     @ResponseStatus(HttpStatus.OK)
     public void authorize(HttpSession session, HttpServletRequest request, HttpServletResponse response
     ) throws IOException {
+        // 기존 로그인 정보를 제거한다.
+        new SecurityContextLogoutHandler().logout(request, null, null);
         AuthorizeResponse authorizeResponse = oauthService.validateAuthorize(request);
         if (authorizeResponse.getError() != null) {
             //응답에 바로 에러를 보내준다.

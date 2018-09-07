@@ -14,6 +14,7 @@ public class OauthUser {
     private Map<String, Object> metaData;
     private long regDate;
     private long updDate;
+    private String provider;
 
     public String getUserName() {
         return userName;
@@ -53,5 +54,13 @@ public class OauthUser {
 
     public void setUpdDate(long updDate) {
         this.updDate = updDate;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 }

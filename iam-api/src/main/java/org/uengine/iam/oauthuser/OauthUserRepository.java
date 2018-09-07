@@ -17,6 +17,9 @@ public interface OauthUserRepository {
 
     //필수
     OauthUser findByUserNameAndUserPassword(String userName, String userPassword);
+    OauthUser findByUserNameAndUserPasswordAndProvider(String userName, String userPassword, String provider);
+
+    OauthUser findByUserNameAndProvider(String userName, String provider);
 
     void deleteByUserName(String userName);
 

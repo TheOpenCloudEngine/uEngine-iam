@@ -149,6 +149,13 @@ public class OauthRegistServiceImpl implements OauthRegistService {
     }
 
     @Override
+    public OauthUser socialSingUp(OauthUser oauthUser) throws Exception {
+
+        //사용자 저장
+        oauthUser = userRepository.insert(oauthUser);
+        return oauthUser;
+    }
+    @Override
     public OauthUser acceptPassword(OauthClient oauthClient, String token, String password) throws Exception {
         //토큰 만료 시간이 지났을 경우.
         long tokenTimestamp = Long.parseLong(new String(org.apache.commons.codec.binary.Base64.decodeBase64(token)));

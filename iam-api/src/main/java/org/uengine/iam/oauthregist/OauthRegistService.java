@@ -14,6 +14,8 @@ public interface OauthRegistService {
 
     OauthUser acceptSingUp(OauthClient oauthClient, String token) throws Exception;
 
+    OauthUser socialSingUp(OauthUser oauthUser) throws Exception;
+
     OauthUser acceptPassword(OauthClient oauthClient, String token, String password) throws Exception;
 
     OauthUser rePassword(OauthClient oauthClient, OauthUser oauthUser, String beforePassword, String afterPassword) throws Exception;
