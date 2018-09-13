@@ -44,7 +44,7 @@ window.browserUrl = location.protocol + '//' + location.hostname + (location.por
 $.ajax({
   url: "/health",
   type: "get",
-  dataType: "json",
+  dataType: "text",
   async: false,
   success: function (data) {
     window.backendUrl = '';
@@ -53,6 +53,7 @@ $.ajax({
     window.backendUrl = 'http://localhost:8080';
   }
 });
+console.log('window.backendUrl', window.backendUrl);
 
 /**
  * Iam && Vue Router
