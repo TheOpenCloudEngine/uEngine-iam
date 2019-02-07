@@ -2,17 +2,17 @@
 
 ## Quick Start
 
-**Build Front end**
+**Building Front end**
 
 ```
-$ cd iam-fron-end
-$ npm install
-$ npm run build
+cd iam-fron-end
+npm install
+npm run build
 ```
 
 It will create static web resource in `iam-sample-app` directory.
 
-*Tip : change build target directory*
+*Tip : changing build target directory*
 
 Change `iam-front-end/config/index.js` as follows:
 
@@ -24,11 +24,11 @@ module.exports = {
     assetsRoot: path.resolve(__dirname, '../../iam-sample-app/src/main/resources/static'),
 ```
 
-**Run**
+**Running IAM Server**
 
 ```
-$ mvn package -B
-$ java -jar iam-sample-app/target/iam-sample-app-2.0.1-SNAPSHOT.jar
+mvn package -B
+java -jar iam-sample-app/target/iam-sample-app-2.0.1-SNAPSHOT.jar
 ```
 
 ## Development
