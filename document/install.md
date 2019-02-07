@@ -14,7 +14,7 @@ It will create static web resource in `iam-sample-app` directory.
 
 *Tip : change build target directory*
 
-Change `iam-front-end/config/index.js` as flow:
+Change `iam-front-end/config/index.js` as follows:
 
 ```
 module.exports = {
