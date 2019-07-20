@@ -5,7 +5,7 @@
 **Build the front-end contents and embed them into the server**
 
 ```
-cd iam-fron-end
+cd iam-front-end
 npm install
 npm run build
 ```
