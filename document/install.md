@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-**Run the front-end server**
+**Build the front-end contents and embed them into the server**
 
 ```
 cd iam-fron-end
