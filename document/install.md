@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-**Building Front end**
+**Run the front-end server**
 
 ```
 cd iam-fron-end
@@ -31,7 +31,7 @@ mvn package -B
 java -jar iam-sample-app/target/iam-sample-app-2.0.1-SNAPSHOT.jar
 ```
 
-## Development
+## Development Environment
  
 
 ### Front-end Development
