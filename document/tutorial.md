@@ -2,22 +2,22 @@
 
 ## Tutorial
 
-OCE IAM 의 Oauth Endpoint 는 다음으로 구성되어 있습니다.
+OCE IAM 의 API Endpoint 는 다음으로 구성되어 있습니다.
 
 | Endpoint             | 설명                   |
-|----------------------|------------------------|
-| /oauth/authorize     | 사용자 인증 url        |
-| /oauth/access_token  | 어세스 토큰 발급 url   |
-| /oauth/refresh_token | 어세스 토큰 재발행 url |
-| /oauth/token_info    | 어세스 토큰 정보 조회  |
+|----------------------|-----------------------|
+| /oauth/authorize     | 사용자 인증 API          |
+| /oauth/access_token  | 억세스 토큰 발급 API      |
+| /oauth/refresh_token | 억세스 토큰 재발행 API     |
+| /oauth/token_info    | 억세스 토큰 정보 조회 API  |
 
-OCE IAM 의 Oauth2 인증 플로우는 Oauth2 프레임워크 표준 규약 RFC 문서를 바탕으로 제작되었습니다.
+OCE IAM는 OAuth2 프레임워크 표준 규약 RFC 문서를 바탕으로 제작되었습니다.
 
 [The OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749#page-33)
 
 ### Authorization Code
 
-Authorization Code 플로우는 제3자의 어플리케이션이 어세스토큰을 발급받는과정입니다. 어플리케이션의 입장에서는 서버사이드 코드가 필요하며, 
+Authorization Code 플로우는 제3자의 어플리케이션이 억세스토큰을 발급받는과정입니다. 어플리케이션의 입장에서는 서버사이드 코드가 필요하며, 
 최초로 code 를 요청하고, code 를 사용해 access_token 로 교환할 때 client_secret (클라이언트 인증) 이 필요합니다.
  
 ![](images/code_flow.png)
