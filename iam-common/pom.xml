@@ -29,7 +29,7 @@
         <commons.codec.version>1.10</commons.codec.version>
 
         <!-- HttpClient -->
-        <httpclient.version>4.3.3</httpclient.version>
+        <httpclient.version>4.5.13</httpclient.version>
 
         <!-- Guava -->
         <guava.version>18.0</guava.version>
